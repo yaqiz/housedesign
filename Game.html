@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>🏠 三关闯关 · Design Your Dream Home</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        body {
+            background: linear-gradient(145deg, #1b6b5e 0%, #0e4a41 100%);
+            font-family: 'Comic Neue', 'Comic Sans MS', 'Segoe UI Emoji', 'Chalkboard SE', sans-serif;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 16px;
+        }
+        .game-container {
+            max-width: 850px;
+            width: 100%;
+            background: #fffaf0;
+            border-radius: 70px;
+            box-shadow: 0 20px 35px rgba(0,0,0,0.4);
+            overflow: hidden;
+            padding: 20px 20px 30px;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #ffaa44;
+            padding: 12px 24px;
+            border-radius: 60px;
+            margin-bottom: 20px;
+            color: #2c2b1f;
+            font-weight: bold;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .level-badge {
+            background: #2c2b1f;
+            color: #ffeaac;
+            padding: 4px 18px;
+            border-radius: 40px;
+            font-size: 1.1rem;
+        }
+        .score-badge {
+            background: #fff3d6;
+            padding: 4px 18px;
+            border-radius: 40px;
+            font-size: 1.2rem;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 14px;
+            background: #d9c9b0;
+            border-radius: 30px;
+            margin-bottom: 24px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: #4c9f70;
+            border-radius: 30px;
+            transition: width 0.5s ease;
+        }
+        .question-area {
+            background: #fef3e0;
+            border-radius: 60px;
+            padding: 24px 18px;
+            text-align: center;
+            min-height: 420px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .question-prompt {
+            font-size: 1.6rem;
+            font-weight: bold;
+            color: #3d2b1a;
+            margin-bottom: 20px;
+        }
+        /* 第一关：消消乐网格 - 图标与单词配对 */
+        .match-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+            gap: 16px;
+            width: 100%;
+            max-width: 550px;
+            margin: 10px auto;
+        }
+        .match-card {
+            background: #ffdead;
+            border-radius: 60px;
+            padding: 12px 8px;
+            text-align: center;
+            font-size: 2.8rem;
+            cursor: pointer;
+            border: 4px solid #dba551;
+            transition: 0.08s linear;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+            aspect-ratio: 1 / 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        .match-card .label-text {
+            font-size: 0.9rem;
+            color: #5a3f1f;
+            display: block;
+            margin-top: 2px;
+        }
+        .match-card.selected {
+            border-color: #ff7700;
+            background: #ffc489;
+            transform: scale(0.94);
+        }
+        .match-card.matched {
+            visibility: hidden;
+            pointer-events: none;
+            opacity: 0;
+            transform: scale(0.5);
+            transition: 0.15s;
+        }
+        /* 第二关：听音选择 */
+        .options-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 18px;
+            width: 100%;
+            max-width: 500px;
+        }
+        .option-btn {
+            background: #ffdead;
+            border: 3px solid #dba551;
+            border-radius: 60px;
+            padding: 16px 12px;
+            min-width: 100px;
+            flex: 1 0 80px;
+            max-width: 160px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.08s linear;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .option-btn .emoji { font-size: 2.8rem; }
+        .option-btn .label { font-size: 0.9rem; text-transform: capitalize; }
+        .option-btn:active { transform: scale(0.96); background: #ffc489; }
+        .option-btn.correct { background: #6fbf73; border-color: #2a7a2a; color: white; }
+        .option-btn.wrong { background: #e06868; border-color: #a13a3a; color: white; }
+        .option-btn.disabled { pointer-events: none; opacity: 0.7; }
+        .audio-btn {
+            background: #f0a25e;
+            border: none;
+            font-size: 1.8rem;
+            padding: 12px 28px;
+            border-radius: 60px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 0 #b06d2e;
+            transition: 0.05s linear;
+        }
+        .audio-btn:active { transform: translateY(2px); box-shadow: 0 1px 0 #b06d2e; }
+        /* 第三关：口语输出 */
+        .speech-card {
+            background: #fff5e6;
+            border-radius: 50px;
+            padding: 20px;
+            width: 100%;
+            max-width: 450px;
+            margin: 0 auto;
+        }
+        .speech-card .room-emoji {
+            font-size: 5rem;
+            background: #ffe1b9;
+            display: inline-block;
+            padding: 10px 30px;
+            border-radius: 60px;
+        }
+        .speech-frame {
+            background: #e9dccb;
+            border-radius: 40px;
+            padding: 16px;
+            margin: 15px 0;
+            font-size: 1.2rem;
+            line-height: 2;
+            text-align: left;
+            color: #3d2b1a;
+        }
+        .speech-frame .highlight {
+            background: #ffd966;
+            padding: 2px 8px;
+            border-radius: 20px;
+        }
+        .speech-btn {
+            background: #4c9f70;
+            border: none;
+            color: white;
+            font-size: 1.3rem;
+            padding: 12px 28px;
+            border-radius: 60px;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 8px;
+            box-shadow: 0 4px 0 #1f5a33;
+            transition: 0.05s linear;
+        }
+        .speech-btn:active { transform: translateY(2px); box-shadow: 0 1px 0 #1f5a33; }
+        .feedback-msg {
+            margin-top: 20px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            min-height: 2.5rem;
+            color: #3d5e3d;
+        }
+        .next-btn {
+            background: #4c9f70;
+            border: none;
+            color: white;
+            font-size: 1.3rem;
+            padding: 12px 36px;
+            border-radius: 60px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 18px;
+            box-shadow: 0 4px 0 #1f5a33;
+            transition: 0.05s linear;
+        }
+        .next-btn:active { transform: translateY(2px); box-shadow: 0 1px 0 #1f5a33; }
+        .next-btn.hidden { display: none; }
+        .final-screen {
+            text-align: center;
+            padding: 30px 10px;
+        }
+        .final-screen .big-emoji { font-size: 4rem; }
+        .final-screen .title { font-size: 2rem; font-weight: bold; margin: 10px 0; }
+        .reset-btn {
+            background: #8b6946;
+            color: white;
+            border: none;
+            padding: 10px 30px;
+            border-radius: 60px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        @media (max-width: 500px) {
+            .match-grid { grid-template-columns: repeat(auto-fit, minmax(70px, 1fr)); gap: 12px; }
+            .match-card { font-size: 2rem; }
+            .option-btn { min-width: 70px; flex: 1 0 60px; max-width: 120px; padding: 12px 6px; }
+            .option-btn .emoji { font-size: 2rem; }
+            .question-prompt { font-size: 1.2rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="game-container" id="app">
+    <div class="header">
+        <span>🏠 梦想之家 · 闯关</span>
+        <span class="level-badge" id="levelDisplay">第 1 / 3 关</span>
+        <span class="score-badge">⭐ <span id="scoreDisplay">0</span></span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+
+    <div class="question-area" id="questionArea">
+        <!-- 动态渲染由 JS 控制 -->
+    </div>
+</div>
+
+<script>
+    // ================= 三关题库 =================
+    // 第一关：图标与单词匹配消消乐 (配对图标 ↔ 单词)
+    // 第二关：听音选择 (听句子，选对应的房间/家具)
+    // 第三关：口语输出 (给出图片和语言框架，学生自己介绍)
+
+    // ---------- 第一关数据：8组 图标 ↔ 单词 配对 ----------
+    const PAIRS = [
+        { id: 'sofa', emoji: '🛋️', word: 'sofa' },
+        { id: 'tv', emoji: '📺', word: 'tv' },
+        { id: 'bed', emoji: '🛏️', word: 'bed' },
+        { id: 'fridge', emoji: '🧊', word: 'fridge' },
+        { id: 'bathtub', emoji: '🛁', word: 'bathtub' },
+        { id: 'stove', emoji: '🍳', word: 'stove' },
+        { id: 'desk', emoji: '📖', word: 'desk' },
+        { id: 'lamp', emoji: '💡', word: 'lamp' }
+    ];
+
+    // 第二关：听音选择题 (播放句子，选对应房间/家具)
+    const LISTEN_LEVELS = [
+        {
+            prompt: '🔊 听句子，选择对应的房间',
+            audioText: 'This is my living room. It is warm and cozy.',
+            options: [
+                { emoji: '🛋️', label: 'living room', correct: true },
+                { emoji: '🛏️', label: 'bedroom', correct: false },
+                { emoji: '🍳', label: 'kitchen', correct: false },
+            ]
+        },
+        {
+            prompt: '🔊 听句子，选择对应的房间',
+            audioText: 'I have a soft bed and a lamp in my bedroom.',
+            options: [
+                { emoji: '🛏️', label: 'bedroom', correct: true },
+                { emoji: '🛁', label: 'bathroom', correct: false },
+                { emoji: '📖', label: 'study', correct: false },
+            ]
+        },
+        {
+            prompt: '🔊 听句子，选择对应的家具',
+            audioText: 'I cook food with this. It is in the kitchen.',
+            options: [
+                { emoji: '🍳', label: 'stove', correct: true },
+                { emoji: '🧊', label: 'fridge', correct: false },
+                { emoji: '🛋️', label: 'sofa', correct: false },
+            ]
+        },
+        {
+            prompt: '🔊 听句子，选择对应的房间',
+            audioText: 'I take a bath here. It is clean and fresh.',
+            options: [
+                { emoji: '🛁', label: 'bathroom', correct: true },
+                { emoji: '🛋️', label: 'living room', correct: false },
+                { emoji: '📖', label: 'study', correct: false },
+            ]
+        }
+    ];
+
+    // 第三关：口语输出 (展示一个房间图片，学生根据框架介绍)
+    const SPEECH_LEVELS = [
+        {
+            emoji: '🛋️',
+            roomName: 'Living Room',
+            color: 'warm yellow',
+            size: 'spacious',
+            furniture: 'sofa and a TV',
+            hint: 'This is my living room. It is warm yellow. There is a sofa and a TV.'
+        },
+        {
+            emoji: '🛏️',
+            roomName: 'Bedroom',
+            color: 'light blue',
+            size: 'quiet',
+            furniture: 'bed and a lamp',
+            hint: 'This is my bedroom. It is light blue. There is a bed and a lamp.'
+        },
+        {
+            emoji: '🍳',
+            roomName: 'Kitchen',
+            color: 'light green',
+            size: 'bright',
+            furniture: 'stove and a fridge',
+            hint: 'This is my kitchen. It is light green. There is a stove and a fridge.'
+        }
+    ];
+
+    // 游戏状态
+    let currentLevel = 1;          // 1, 2, 3
+    let currentSubIndex = 0;       // 每个关卡内的子进度
+    let score = 0;
+    let isAnswered = false;
+    let audioSynth = window.speechSynthesis;
+
+    // 第一关匹配状态
+    let matchCards = [];
+    let selectedIndex = null;
+    let matchedPairs = 0;
+
+    const app = document.getElementById('app');
+    const questionArea = document.getElementById('questionArea');
+    const levelDisplay = document.getElementById('levelDisplay');
+    const scoreDisplay = document.getElementById('scoreDisplay');
+    const progressFill = document.getElementById('progressFill');
+
+    function updateUI() {
+        scoreDisplay.innerText = score;
+        const totalSubLevels = getTotalSubLevels();
+        const completed = getCompletedCount();
+        const progress = (completed / totalSubLevels) * 100;
+        progressFill.style.width = Math.min(progress, 100) + '%';
+        levelDisplay.innerText = `第 ${currentLevel} / 3 关`;
+    }
+
+    function getTotalSubLevels() {
+        if (currentLevel === 1) return 1;
+        if (currentLevel === 2) return LISTEN_LEVELS.length;
+        if (currentLevel === 3) return SPEECH_LEVELS.length;
+        return 1;
+    }
+
+    function getCompletedCount() {
+        if (currentLevel === 1) return matchedPairs === PAIRS.length ? 1 : 0;
+        if (currentLevel === 2) return currentSubIndex;
+        if (currentLevel === 3) return currentSubIndex;
+        return 0;
+    }
+
+    function speakText(text, callback) {
+        if (audioSynth) {
+            audioSynth.cancel();
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'en-US';
+            utterance.rate = 0.85;
+            utterance.onend = () => { if (callback) callback(); };
+            audioSynth.speak(utterance);
+        } else {
+            if (callback) callback();
+        }
+    }
+
+    // ================= 第一关：消消乐 (图标 ↔ 单词 匹配) =================
+    function renderLevel1() {
+        currentLevel = 1;
+        currentSubIndex = 0;
+        matchedPairs = 0;
+        selectedIndex = null;
+        // 生成卡片数据：一半图标，一半单词
+        let deck = [];
+        PAIRS.forEach(p => {
+            // 图标卡
+            deck.push({ pairId: p.id, type: 'icon', emoji: p.emoji, word: p.word, matched: false });
+            // 单词卡
+            deck.push({ pairId: p.id, type: 'word', emoji: '', word: p.word, matched: false });
+        });
+        // 打乱
+        for (let i = deck.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [deck[i], deck[j]] = [deck[j], deck[i]];
+        }
+        matchCards = deck;
+
+        questionArea.innerHTML = '';
+        const prompt = document.createElement('div');
+        prompt.className = 'question-prompt';
+        prompt.innerText = '🖼️ 点击配对：图标 ↔ 对应的英文单词 (消消乐)';
+        questionArea.appendChild(prompt);
+
+        const grid = document.createElement('div');
+        grid.className = 'match-grid';
+        grid.id = 'matchGrid';
+        questionArea.appendChild(grid);
+
+        const feedback = document.createElement('div');
+        feedback.className = 'feedback-msg';
+        feedback.id = 'feedbackMsg';
+        questionArea.appendChild(feedback);
+
+        renderMatchGrid();
+        updateUI();
+    }
+
+    function renderMatchGrid() {
+        const grid = document.getElementById('matchGrid');
+        if (!grid) return;
+        grid.innerHTML = '';
+        matchCards.forEach((card, idx) => {
+            const div = document.createElement('div');
+            div.className = 'match-card';
+            if (card.matched) div.classList.add('matched');
+            if (selectedIndex === idx && !card.matched) div.classList.add('selected');
+            // 显示内容：图标卡显示 emoji，单词卡显示单词
+            if (card.type === 'icon') {
+                div.innerHTML = `${card.emoji}`;
+            } else {
+                div.innerHTML = `<span style="font-size:1.4rem;">${card.word}</span>`;
+            }
+            div.dataset.index = idx;
+            div.addEventListener('click', () => handleMatchClick(idx));
+            grid.appendChild(div);
+        });
+        // 检查是否全部匹配
+        if (matchCards.every(c => c.matched)) {
+            const fb = document.getElementById('feedbackMsg');
+            if (fb) fb.innerText = '🎉 全部配对完成！进入下一关 ➡️';
+            const oldBtn = document.querySelector('.next-btn');
+            if (oldBtn) oldBtn.remove();
+            const nextBtn = document.createElement('button');
+            nextBtn.className = 'next-btn';
+            nextBtn.innerText = '➡️ 进入第二关';
+            nextBtn.addEventListener('click', () => {
+                currentLevel = 2;
+                currentSubIndex = 0;
+                renderLevel2();
+            });
+            questionArea.appendChild(nextBtn);
+            updateUI();
+        }
+    }
+
+    function handleMatchClick(index) {
+        const card = matchCards[index];
+        if (card.matched) return;
+        if (selectedIndex === null) {
+            selectedIndex = index;
+            renderMatchGrid();
+            return;
+        }
+        if (selectedIndex === index) {
+            selectedIndex = null;
+            renderMatchGrid();
+            return;
+        }
+        // 尝试配对：必须一个是图标，一个是单词，且 pairId 相同
+        const first = matchCards[selectedIndex];
+        const second = matchCards[index];
+        if (first.type !== second.type && first.pairId === second.pairId) {
+            // 配对成功
+            first.matched = true;
+            second.matched = true;
+            matchedPairs++;
+            score += 10;
+            updateUI();
+            const fb = document.getElementById('feedbackMsg');
+            if (fb) fb.innerText = '✅ 配对成功！ +10分';
+            selectedIndex = null;
+            renderMatchGrid();
+            // 检查是否全部完成
+            if (matchCards.every(c => c.matched)) {
+                const fb2 = document.getElementById('feedbackMsg');
+                if (fb2) fb2.innerText = '🎉 第一关完成！点击按钮进入第二关';
+                const oldBtn = document.querySelector('.next-btn');
+                if (oldBtn) oldBtn.remove();
+                const nextBtn = document.createElement('button');
+                nextBtn.className = 'next-btn';
+                nextBtn.innerText = '➡️ 进入第二关';
+                nextBtn.addEventListener('click', () => {
+                    currentLevel = 2;
+                    currentSubIndex = 0;
+                    renderLevel2();
+                });
+                questionArea.appendChild(nextBtn);
+                updateUI();
+            }
+        } else {
+            // 配对失败
+            const fb = document.getElementById('feedbackMsg');
+            if (fb) fb.innerText = '❌ 不匹配，再试试！';
+            selectedIndex = null;
+            renderMatchGrid();
+        }
+    }
+
+    // ================= 第二关：听音选择 =================
+    function renderLevel2() {
+        currentLevel = 2;
+        if (currentSubIndex >= LISTEN_LEVELS.length) {
+            // 第二关完成，进入第三关
+            questionArea.innerHTML = `
+                <div style="padding:20px; text-align:center;">
+                    <div style="font-size:3rem;">🎧</div>
+                    <div style="font-size:1.5rem; font-weight:bold; margin:10px 0;">第二关完成！</div>
+                    <button class="next-btn" id="goToLevel3">➡️ 进入第三关 · 口语输出</button>
+                </div>
+            `;
+            document.getElementById('goToLevel3').addEventListener('click', () => {
+                currentLevel = 3;
+                currentSubIndex = 0;
+                renderLevel3();
+            });
+            updateUI();
+            return;
+        }
+
+        const level = LISTEN_LEVELS[currentSubIndex];
+        isAnswered = false;
+        questionArea.innerHTML = '';
+
+        const prompt = document.createElement('div');
+        prompt.className = 'question-prompt';
+        prompt.innerText = level.prompt;
+        questionArea.appendChild(prompt);
+
+        // 播放按钮
+        const audioBtn = document.createElement('button');
+        audioBtn.className = 'audio-btn';
+        audioBtn.innerText = '🔊 点击播放句子';
+        audioBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            speakText(level.audioText);
+        });
+        questionArea.appendChild(audioBtn);
+
+        const grid = document.createElement('div');
+        grid.className = 'options-grid';
+        const shuffled = [...level.options].sort(() => Math.random() - 0.5);
+        shuffled.forEach((opt) => {
+            const btn = document.createElement('div');
+            btn.className = 'option-btn';
+            btn.innerHTML = `<span class="emoji">${opt.emoji}</span><span class="label">${opt.label}</span>`;
+            btn.dataset.correct = opt.correct ? 'true' : 'false';
+            btn.addEventListener('click', () => {
+                if (isAnswered) return;
+                const isCorrect = btn.dataset.correct === 'true';
+                document.querySelectorAll('.option-btn').forEach(b => b.classList.add('disabled'));
+                if (isCorrect) {
+                    btn.classList.add('correct');
+                    score += 10;
+                    updateUI();
+                    showFeedback2('✅ 正确！ +10分', 'success');
+                } else {
+                    btn.classList.add('wrong');
+                    document.querySelectorAll('.option-btn').forEach(b => {
+                        if (b.dataset.correct === 'true') b.classList.add('correct');
+                    });
+                    showFeedback2('❌ 再听听看~', 'error');
+                }
+                isAnswered = true;
+                // 显示下一题按钮
+                const nextBtn = document.createElement('button');
+                nextBtn.className = 'next-btn';
+                nextBtn.innerText = currentSubIndex === LISTEN_LEVELS.length - 1 ? '📢 完成第二关' : '➡️ 下一题';
+                nextBtn.addEventListener('click', () => {
+                    currentSubIndex++;
+                    renderLevel2();
+                });
+                questionArea.appendChild(nextBtn);
+            });
+            grid.appendChild(btn);
+        });
+        questionArea.appendChild(grid);
+
+        const feedback = document.createElement('div');
+        feedback.className = 'feedback-msg';
+        feedback.id = 'feedbackMsg2';
+        questionArea.appendChild(feedback);
+        updateUI();
+    }
+
+    function showFeedback2(msg, type) {
+        const fb = document.getElementById('feedbackMsg2');
+        if (fb) {
+            fb.innerText = msg;
+            fb.style.color = type === 'success' ? '#2a7a2a' : '#a13a3a';
+        }
+    }
+
+    // ================= 第三关：口语输出 =================
+    function renderLevel3() {
+        currentLevel = 3;
+        if (currentSubIndex >= SPEECH_LEVELS.length) {
+            renderFinalScreen();
+            return;
+        }
+
+        const level = SPEECH_LEVELS[currentSubIndex];
+        questionArea.innerHTML = '';
+
+        const prompt = document.createElement('div');
+        prompt.className = 'question-prompt';
+        prompt.innerText = `🎤 第 ${currentSubIndex + 1} 关 · 看图介绍你的房间`;
+        questionArea.appendChild(prompt);
+
+        const card = document.createElement('div');
+        card.className = 'speech-card';
+        card.innerHTML = `
+            <div style="text-align:center;">
+                <div class="room-emoji">${level.emoji}</div>
+                <div style="font-size:1.5rem; font-weight:bold; margin:8px 0;">${level.roomName}</div>
+            </div>
+            <div class="speech-frame">
+                <div>📋 语言框架：</div>
+                <div>1️⃣ <span class="highlight">This is my ______.</span></div>
+                <div>2️⃣ <span class="highlight">It is ______</span> (颜色).</div>
+                <div>3️⃣ <span class="highlight">There is a ______ and a ______.</span></div>
+                <div style="margin-top:8px; background:#fff2d6; padding:8px; border-radius:20px; font-size:1rem;">
+                    💡 示例: ${level.hint}
+                </div>
+            </div>
+            <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:12px;">
+                <button class="speech-btn" id="listenExampleBtn">🔊 听示例</button>
+                <button class="speech-btn" id="recordDoneBtn">✅ 我说完了，得分！</button>
+            </div>
+        `;
+        questionArea.appendChild(card);
+
+        const feedback = document.createElement('div');
+        feedback.className = 'feedback-msg';
+        feedback.id = 'feedbackMsg3';
+        feedback.innerText = '👩‍🏫 请根据框架口头介绍，然后点击 "我说完了" 得分！';
+        questionArea.appendChild(feedback);
+
+        // 听示例
+        document.getElementById('listenExampleBtn').addEventListener('click', () => {
+            speakText(level.hint);
+        });
+
+        // 得分按钮 (老师或学生自评，点击给分)
+        let scored = false;
+        document.getElementById('recordDoneBtn').addEventListener('click', () => {
+            if (scored) return;
+            scored = true;
+            score += 15;
+            updateUI();
+            const fb = document.getElementById('feedbackMsg3');
+            if (fb) {
+                fb.innerText = '🎉 太棒了！ +15分 口语小达人！';
+                fb.style.color = '#2a7a2a';
+            }
+            // 显示下一关按钮
+            const nextBtn = document.createElement('button');
+            nextBtn.className = 'next-btn';
+            nextBtn.innerText = currentSubIndex === SPEECH_LEVELS.length - 1 ? '🏆 查看成绩' : '➡️ 下一房间';
+            nextBtn.addEventListener('click', () => {
+                currentSubIndex++;
+                renderLevel3();
+            });
+            questionArea.appendChild(nextBtn);
+        });
+
+        updateUI();
+    }
+
+    // ================= 最终结算 =================
+    function renderFinalScreen() {
+        questionArea.innerHTML = `
+            <div class="final-screen">
+                <div class="big-emoji">🏆</div>
+                <div class="title">🎉 闯关完成！</div>
+                <div style="font-size:2.5rem; margin: 10px 0;">⭐ ${score} 分</div>
+                <div style="font-size:1.2rem; margin-bottom:20px;">你已经是优秀的小小设计师啦！</div>
+                <button class="reset-btn" id="resetGameBtn">🔄 重新挑战</button>
+            </div>
+        `;
+        document.getElementById('resetGameBtn').addEventListener('click', resetGame);
+        progressFill.style.width = '100%';
+        levelDisplay.innerText = '🏁 通关';
+    }
+
+    // ================= 重置 =================
+    function resetGame() {
+        currentLevel = 1;
+        currentSubIndex = 0;
+        score = 0;
+        matchedPairs = 0;
+        selectedIndex = null;
+        if (audioSynth) audioSynth.cancel();
+        renderLevel1();
+        updateUI();
+    }
+
+    // ================= 启动 =================
+    renderLevel1();
+    updateUI();
+</script>
+</body>
+</html>

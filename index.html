@@ -1211,6 +1211,8 @@
   .btn-primary:hover{background:#1d4ed8}
   .btn-secondary{background:#f1f5f9;color:#475569;border:1.5px solid #cbd5e1}
   .btn-secondary:hover{background:#e2e8f0}
+  .btn-danger{background:#ef4444;color:#fff;border:none;box-shadow:0 2px 6px rgba(239,68,68,.22)}
+  .btn-danger:hover{background:#dc2626}
   .btn-back{background:transparent;color:#64748b;font-size:13px;padding:8px 12px;border-radius:8px;margin-right:8px;font-weight:600}
   .btn-back:hover{background:#f1f5f9;color:#1e293b}
   #stage-present{align-items:center;justify-content:flex-start;background:#f8fafc;padding:24px;overflow-y:auto;-webkit-overflow-scrolling:touch}
@@ -1244,9 +1246,20 @@
   .mascot-tip.show{opacity:1;transform:translateY(0)}
   .overview-wrap{padding:24px;overflow-y:auto;flex:1;-webkit-overflow-scrolling:touch}
   .overview-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;grid-gap:16px;max-width:1200px;margin:0 auto}
+  .word-bank{position:absolute;top:18px;right:18px;z-index:3;width:300px;max-width:calc(100% - 36px);display:flex;flex-direction:column;align-items:flex-end}
+  .word-bank-toggle{background:rgba(255,255,255,.96);border:1.5px solid #c7d2fe;border-radius:12px;padding:10px 14px;font-size:14px;font-weight:800;color:#312e81;box-shadow:0 10px 24px rgba(37,99,235,.12)}
+  .word-bank-panel{display:none;width:100%;margin-top:8px;background:rgba(255,255,255,.97);border:1.5px solid #dbeafe;border-radius:16px;padding:14px;box-shadow:0 16px 30px rgba(15,23,42,.14);max-height:300px;overflow:auto;-webkit-overflow-scrolling:touch}
+  .word-bank.open .word-bank-panel{display:block}
+  .word-bank-title{font-size:16px;font-weight:800;color:#1e40af;margin-bottom:10px}
+  .word-bank-group+.word-bank-group{margin-top:12px;padding-top:12px;border-top:1px dashed #dbeafe}
+  .word-bank-group h4{font-size:13px;color:#334155;margin-bottom:8px}
+  .word-bank-item{display:grid;grid-template-columns:auto 1fr auto;gap:8px;align-items:center;font-size:13px;color:#475569;padding:4px 0}
+  .word-bank-item b{color:#1e293b;font-weight:700}
+  .word-bank-speak{width:28px;height:28px;border-radius:999px;background:#eff6ff;border:1px solid #bfdbfe;color:#2563eb;font-size:14px;display:flex;align-items:center;justify-content:center}
   .overview-card{background:#ffffff;border:1.5px solid #e2e8f0;border-radius:16px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.05)}
   .overview-card h3{padding:14px 16px 6px;font-size:17px;display:-webkit-flex;display:-webkit-flex;display:-webkit-flex;display:flex;align-items:center;gap:8px;font-weight:700;color:#1e40af}
   .overview-card .ov-area{padding:0 16px 10px;color:#64748b;font-size:13px}
+  .overview-card .ov-floor{padding:0 16px 10px;color:#94a3b8;font-size:11px;line-height:1.2;min-height:23px;display:flex;align-items:center}
   .overview-card .ov-items{padding:0 16px 14px;display:-webkit-flex;display:-webkit-flex;display:flex;flex-wrap:wrap;gap:6px}
   .overview-card .ov-item{background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:5px 12px;font-size:13px;font-weight:600;color:#1e40af}
   .overview-card .ov-empty{padding:0 16px 14px;color:#94a3b8;font-size:14px;font-style:italic}
@@ -1457,13 +1470,23 @@
   .student-name-panel label{display:block;font-size:13px;font-weight:700;color:#1e40af;margin-bottom:8px}
   .student-name-panel input{width:100%;min-height:46px;border:1.5px solid #bfdbfe;border-radius:9px;padding:10px 12px;font-size:16px;color:#1e293b;background:#f8fbff}
   .student-name-panel input:focus{outline:none;border-color:#2563eb;box-shadow:0 0 0 3px rgba(37,99,235,.12)}
+  .home-link-row{margin:14px auto 0;display:flex;justify-content:center;gap:10px;flex-wrap:wrap}
+  .home-link-btn{display:inline-flex;align-items:center;justify-content:center;padding:10px 16px;border-radius:10px;border:1.5px solid #cbd5e1;background:#fff;color:#334155;font-size:14px;font-weight:700;box-shadow:0 4px 12px rgba(15,23,42,.06)}
+  .home-link-btn:hover{transform:translateY(-1px)}
   .submit-design-panel{margin:18px auto 0;max-width:760px;background:#ffffff;border:2px solid #bfdbfe;border-radius:14px;padding:16px;text-align:center;box-shadow:0 2px 8px rgba(37,99,235,.08)}
   .submit-design-panel h3{font-size:18px;color:#1e40af;margin-bottom:6px}
   .submit-design-panel p{font-size:13px;color:#64748b;line-height:1.6;margin-bottom:12px}
   .submit-design-panel button{padding:12px 22px;border-radius:10px;font-size:15px;font-weight:700}
+  .submit-edit-box{max-width:360px;margin:0 auto 12px;text-align:left}
+  .submit-edit-box label{display:block;font-size:13px;font-weight:700;color:#1e40af;margin-bottom:6px}
+  .submit-edit-box input{width:100%;min-height:42px;border:1.5px solid #bfdbfe;border-radius:9px;padding:9px 12px;font-size:15px;background:#f8fbff;color:#1e293b}
+  .submit-edit-note{font-size:12px;color:#64748b;line-height:1.5;margin-top:6px}
   .submit-status{margin-top:10px;font-size:13px;font-weight:700;color:#475569;min-height:20px}
-  .floating-tools{position:fixed;top:10px;right:10px;z-index:120;display:flex;flex-direction:column;align-items:flex-end;gap:8px}
-  .submission-toggle,.teacher-toggle{position:relative;top:auto;right:auto;color:#fff;border-radius:10px;padding:9px 12px;font-size:13px;font-weight:800;box-shadow:0 6px 18px rgba(15,23,42,.18);min-width:132px;text-align:center}
+  .floating-tools{position:fixed;top:10px;right:10px;z-index:120;display:flex;flex-direction:column;align-items:flex-end}
+  .tools-menu-btn,.submission-toggle,.teacher-toggle{position:relative;top:auto;right:auto;color:#fff;border-radius:10px;padding:9px 12px;font-size:13px;font-weight:800;box-shadow:0 6px 18px rgba(15,23,42,.18);min-width:132px;text-align:center}
+  .tools-menu-btn{background:#0f172a}
+  .tools-menu-panel{display:none;flex-direction:column;align-items:flex-end;gap:8px;margin-top:8px;padding:10px;border-radius:14px;background:rgba(255,255,255,.92);border:1.5px solid #dbeafe;box-shadow:0 10px 26px rgba(15,23,42,.12);backdrop-filter:blur(8px)}
+  .floating-tools.open .tools-menu-panel{display:flex}
   .submission-toggle{background:#2563eb}
   .teacher-toggle{background:#7c3aed}
   .submission-drawer{position:fixed;top:0;right:0;width:360px;max-width:92vw;height:100%;background:#ffffff;border-left:2px solid #dbeafe;box-shadow:-8px 0 24px rgba(15,23,42,.16);z-index:140;transform:translateX(105%);transition:transform .22s ease;display:flex;flex-direction:column}
@@ -1480,6 +1503,10 @@
   .review-box{border-top:1px solid #e2e8f0;margin-top:10px;padding-top:10px}
   .review-box input,.review-box textarea,.review-box select{width:100%;border:1.5px solid #cbd5e1;border-radius:8px;padding:8px 10px;font-size:13px;margin:5px 0;background:#fff}
   .review-box textarea{min-height:64px;resize:vertical}
+  .review-rubric{margin:8px 0 6px;padding:10px 12px;border-radius:10px;background:#f8fafc;border:1px solid #e2e8f0}
+  .review-rubric div{font-size:12px;line-height:1.55;color:#475569}
+  .review-rubric div+div{margin-top:6px}
+  .review-rubric b{color:#1e293b}
   .review-stars{display:flex;align-items:center;gap:4px;margin:6px 0 8px}
   .review-stars button{background:none;border:none;padding:2px;font-size:24px;line-height:1;color:#cbd5e1;cursor:pointer;min-width:28px}
   .review-stars button.active{color:#f59e0b}
@@ -1502,6 +1529,7 @@
   .teacher-board.open{display:flex}
   .teacher-board-head{padding:18px 20px 14px;background:linear-gradient(135deg,#faf5ff,#eff6ff);border-bottom:2px solid #ddd6fe;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
   .teacher-board-head h2{font-size:24px;color:#4c1d95;flex:1}
+  .teacher-board-head .btn-primary,.teacher-board-head .btn-secondary{min-height:40px;padding:10px 16px;border-radius:10px;font-size:13px;font-weight:800;border:none}
   .teacher-board-sub{font-size:13px;color:#6b7280;width:100%}
   .teacher-board-stats{display:flex;gap:10px;flex-wrap:wrap;padding:14px 20px 0}
   .teacher-stat{background:#fff;border:1.5px solid #ddd6fe;border-radius:14px;padding:10px 14px;min-width:120px;box-shadow:0 4px 14px rgba(124,58,237,.08)}
@@ -1521,7 +1549,7 @@
   .teacher-note-empty{font-size:12px;color:#94a3b8;font-style:italic}
   .teacher-note-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
   .teacher-note-actions button{border-radius:10px;padding:9px 11px;font-size:12px;font-weight:800}
-  @media (max-width:744px){.floating-tools{top:8px;right:8px;gap:6px}.submission-toggle,.teacher-toggle{padding:8px 10px;font-size:12px;min-width:118px}.submission-drawer{width:100%;max-width:100vw}.teacher-board-head{padding:14px 14px 12px}.teacher-board-stats{padding:12px 14px 0}.teacher-board-body{padding:14px}}
+  @media (max-width:744px){.floating-tools{top:8px;right:8px}.tools-menu-btn,.submission-toggle,.teacher-toggle{padding:8px 10px;font-size:12px;min-width:118px}.tools-menu-panel{gap:6px;margin-top:6px;padding:8px}.submission-drawer{width:100%;max-width:100vw}.teacher-board-head{padding:14px 14px 12px}.teacher-board-stats{padding:12px 14px 0}.teacher-board-body{padding:14px}.word-bank{top:12px;right:12px;left:12px;width:auto;max-width:none}.word-bank-panel{max-height:220px}}
 
   /* === Flex gap fallback for old Android (Chrome < 84) === */
   @supports not (gap:1em){
@@ -1549,6 +1577,7 @@
   <input type="text" name="bot-field">
   <input type="text" name="student_name">
   <input type="text" name="style">
+  <input type="text" name="edit_code">
   <textarea name="design_json"></textarea>
   <input type="text" name="submitted_at">
   <button type="submit">Submit</button>
@@ -1567,8 +1596,11 @@
 
 
 <div class="floating-tools">
-  <button class="submission-toggle" onclick="openSubmissionMenu()">Submissions</button>
-  <button class="teacher-toggle" onclick="openTeacherEntry()">Teacher Board</button>
+  <button class="tools-menu-btn" onclick="toggleToolsMenu()">Menu</button>
+  <div class="tools-menu-panel">
+    <button class="submission-toggle" onclick="openSubmissionMenu()">Submissions</button>
+    <button class="teacher-toggle" onclick="openTeacherEntry()">Teacher Board</button>
+  </div>
 </div>
 <div class="submission-drawer" id="submissionDrawer">
   <div class="submission-head">
@@ -1596,6 +1628,7 @@
 <div class="teacher-board" id="teacherBoard">
   <div class="teacher-board-head">
     <h2>Teacher Board / Class Exhibition</h2>
+    <button class="btn-danger" onclick="teacherResetAllSubmissions()">Reset All</button>
     <button class="btn-secondary" onclick="loadTeacherBoard()">Refresh</button>
     <button class="btn-primary" onclick="closeTeacherBoard()">Close</button>
     <div class="teacher-board-sub">Sticky-note view of all student designs and peer feedback.</div>
@@ -1615,6 +1648,9 @@
     <div class="student-name-panel">
       <label for="studentNameInput">Who are you? / 我是谁</label>
       <input id="studentNameInput" type="text" autocomplete="name" placeholder="Type your name / 输入你的名字">
+    </div>
+    <div class="home-link-row">
+      <a class="home-link-btn" href="./Game.html">Open Game / 打开游戏</a>
     </div>
   </div>
   <div class="style-grid" id="styleGrid"></div>
@@ -4256,6 +4292,59 @@ function drawBlueprint(){
   ctx.fillText('N',0,-22);ctx.restore();
 }
 
+function renderWordBankPanel(){
+  const groups=[
+    {title:'1. Colours 颜色',items:[
+      ['red','红色'],['blue','蓝色'],['yellow','黄色'],['green','绿色'],['pink','粉色'],['white','白色'],['black','黑色'],['purple','紫色'],['orange','橙色']
+    ]},
+    {title:'2. Positions 方位',items:[
+      ['in','在……里面'],['on','在……上面'],['under','在……下面'],['beside','在……旁边'],['next to','紧挨着'],['behind','在……后面'],['near the window','在窗户旁'],['on the left','在左边'],['on the right','在右边']
+    ]},
+    {title:'3. Shapes & Sizes 形状、大小',items:[
+      ['big','大的'],['small','小的'],['long','长的'],['short','短的'],['round','圆形的'],['square','方形的']
+    ]},
+    {title:'4. Nice Adjectives 描述形容词',items:[
+      ['bright','明亮的'],['tidy','整洁的'],['soft','柔软的'],['clean','干净的'],['nice','好看的'],['cool','酷的'],['cozy','舒适的']
+    ]}
+  ];
+  let html='<div class="word-bank" id="wordBankBox">';
+  html+='<button class="word-bank-toggle" onclick="toggleWordBank()">Word Bank</button>';
+  html+='<div class="word-bank-panel">';
+  html+='<div class="word-bank-title">Word bank</div>';
+  groups.forEach(group=>{
+    html+='<div class="word-bank-group">';
+    html+='<h4>'+group.title+'</h4>';
+    group.items.forEach(item=>{
+      html+='<div class="word-bank-item">';
+      html+='<b>'+escapeHtml(item[0])+'</b>';
+      html+='<span>'+escapeHtml(item[1])+'</span>';
+      html+='<button class="word-bank-speak" type="button" onclick="speakWordBank(event,\''+escapeHtml(item[0]).replace(/&#39;/g,"\\'")+'\')">🔊</button>';
+      html+='</div>';
+    });
+    html+='</div>';
+  });
+  html+='</div></div>';
+  return html;
+}
+
+function toggleWordBank(){
+  const box=document.getElementById('wordBankBox');
+  if(box)box.classList.toggle('open');
+}
+
+function speakWordBank(event,text){
+  if(event){event.stopPropagation();}
+  if(typeof speechSynthesis==='undefined')return;
+  try{
+    speechSynthesis.cancel();
+    const utt=new SpeechSynthesisUtterance(text);
+    utt.lang='en-US';
+    utt.rate=0.9;
+    utt.pitch=1;
+    speechSynthesis.speak(utt);
+  }catch(e){}
+}
+
 function showOverview(){
   saveCurrentDesign();
   const currentStudent=getStudentName()||'Student';
@@ -4275,7 +4364,7 @@ function showOverview(){
   const designedCount=Object.keys(ROOMS).filter(k=>savedDesigns[k]).length;
   let html='<div style="text-align:center;margin-bottom:12px"><h2 style="font-size:22px;color:#1e293b">'+escapeHtml(currentStudent)+'\'s Dream Home</h2><p style="color:#64748b;font-size:14px">'+s.icon+' '+s.name+' '+s.nameCn+' - '+designedCount+' rooms - '+totalItems+' furniture - '+totalArea+' m2</p></div>';
   const ov3dH=window.innerWidth<745?'280px':window.innerWidth<1400?'360px':'420px';
-  html+=`<div id="overview3d" style="width:100%;height:${ov3dH};border-radius:16px;overflow:hidden;border:2px solid #e2e8f0;background:#f0f4f8;position:relative;touch-action:none"><div style="position:absolute;left:10px;bottom:10px;z-index:2;background:rgba(255,255,255,.92);border:1px solid #dbe3ef;border-radius:8px;padding:6px 10px;font-size:12px;color:#475569">Tap a room to zoom inside - tap empty space to return / \u70b9\u51fb\u623f\u95f4\u653e\u5927\u67e5\u770b - \u70b9\u51fb\u7a7a\u767d\u8fd4\u56de</div></div>`;
+  html+=`<div id="overview3d" style="width:100%;height:${ov3dH};border-radius:16px;overflow:hidden;border:2px solid #e2e8f0;background:#f0f4f8;position:relative;touch-action:none">${renderWordBankPanel()}<div style="position:absolute;left:10px;bottom:10px;z-index:2;background:rgba(255,255,255,.92);border:1px solid #dbe3ef;border-radius:8px;padding:6px 10px;font-size:12px;color:#475569">Tap a room to zoom inside - tap empty space to return / \u70b9\u51fb\u623f\u95f4\u653e\u5927\u67e5\u770b - \u70b9\u51fb\u7a7a\u767d\u8fd4\u56de</div></div>`;
   // Floor tabs
   html+='<div style="display:-webkit-flex;display:-webkit-flex;display:flex;gap:10px;justify-content:center;margin:12px 0"><button class="btn-primary" style="padding:8px 20px;border-radius:8px" onclick="overviewFloor(1)">1F 一楼</button><button class="btn-primary" style="padding:8px 20px;border-radius:8px" onclick="overviewFloor(2)">2F 二楼</button><button class="btn-primary" style="padding:8px 20px;border-radius:8px" onclick="overviewFloor(0)">All / 全部</button></div>';
   // Room cards
@@ -4287,7 +4376,7 @@ function showOverview(){
     html+='<div class="overview-card">';
     html+='<h3>'+r.icon+' '+r.name+' '+r.nameCn+'</h3>';
     html+='<div class="ov-area">'+area+' m² · '+(d?d.length:0)+' piece'+(d&&d.length!==1?'s':'')+'</div>';
-    html+='<div style="color:#94a3b8;font-size:11px">'+(r.floor===1?'1F 一楼':'2F 二楼')+'</div>';
+    html+='<div class="ov-floor">'+(r.floor===1?'1F 一楼':'2F 二楼')+'</div>';
     if(d&&d.length>0){
       html+='<div class="ov-items">';
       d.forEach(item=>{html+='<div class="ov-item">'+item.label+'</div>';});
@@ -4307,33 +4396,6 @@ function showOverview(){
     },0);
   },0);
   html+='<div class="overview-summary">';
-  html+='<h2>🏠 Dream Home Introduction / 梦想之家总介绍</h2>';
-  // Per-room fill-in-the-blank sentence frames (English only, same format as language frame)
-  Object.entries(ROOMS).forEach(([key,r])=>{
-    const d=savedDesigns[key];
-    html+='<div style="background:#fff;border:1.5px solid #e2e8f0;border-radius:12px;padding:12px 16px;margin:8px 0">';
-    html+=`<h3 style="font-size:16px;color:#1e293b;margin-bottom:6px">${r.icon} ${r.name}</h3>`;
-    html+=`<div style="font-size:13px;color:#475569;line-height:1.7">`;
-    html+=`This is my <span style="border-bottom:2px solid #4338ca;padding:0 3px;color:#4338ca;font-weight:600">__________</span>. `;
-    html+=`It's <span style="border-bottom:2px solid #ea580c;padding:0 3px;color:#ea580c;font-weight:600">__________</span>. `;
-    if(d&&d.length>0){
-      if(d.length>=3){
-        const names=d.slice(0,3).map(()=>'<span style="border-bottom:2px solid #0284c7;padding:0 3px;color:#0284c7;font-weight:600">__________</span>');
-        html+=`There is a ${names[0]}, a ${names[1]} and a ${names[2]}. `;
-        d.slice(3).forEach(()=>{
-          html+=`I have a <span style="border-bottom:2px solid #0284c7;padding:0 3px;color:#0284c7;font-weight:600">__________</span>. `;
-        });
-      }else if(d.length===2){
-        html+=`There is a <span style="border-bottom:2px solid #0284c7;padding:0 3px;color:#0284c7;font-weight:600">__________</span> and a <span style="border-bottom:2px solid #0284c7;padding:0 3px;color:#0284c7;font-weight:600">__________</span>. `;
-      }else if(d.length===1){
-        html+=`There is a <span style="border-bottom:2px solid #0284c7;padding:0 3px;color:#0284c7;font-weight:600">__________</span>. `;
-      }
-    }else{
-      html+=`There is a <span style="border-bottom:2px solid #0284c7;padding:0 3px;color:#0284c7;font-weight:600">__________</span>, a <span style="border-bottom:2px solid #0284c7;padding:0 3px;color:#0284c7;font-weight:600">__________</span> and a <span style="border-bottom:2px solid #0284c7;padding:0 3px;color:#0284c7;font-weight:600">__________</span>. `;
-    }
-    html+=`I love my <span style="border-bottom:2px solid #16a34a;padding:0 3px;color:#16a34a;font-weight:600">__________</span>.`;
-    html+=`</div></div>`;
-  });
   // === System Auto-Evaluation ===
   const strengths=[];
   const improvements=[];
@@ -4374,7 +4436,7 @@ function showOverview(){
   html+=`<div style="margin:8px 0"><div style="font-size:14px;font-weight:600;color:#f59e0b">💡 Suggestions / 建议</div>`;
   improvements.forEach(s=>{html+=`<div style="font-size:13px;color:#475569;margin:4px 0;padding-left:12px">• ${s}</div>`;});
   html+=`</div></div>`;
-  // === Self-Evaluation (6-dimension star rating) ===
+  // === Self-Evaluation (3-item single-star checklist) ===
   html+=`<div style="margin-top:20px;padding:16px;background:#fff;border:1.5px solid #e2e8f0;border-radius:12px">`;
   html+=`<h3 style="font-size:18px;color:#1e293b;margin-bottom:12px">📝 Self-Evaluation / 自我评价</h3>`;
   html+=`<table style="width:100%;border-collapse:collapse;font-size:13px">`;
@@ -4384,12 +4446,9 @@ function showOverview(){
   html+=`<th style="padding:8px 6px;text-align:center;border-bottom:2px solid #e2e8f0;width:25%">Rating</th>`;
   html+=`</tr></thead><tbody>`;
   const rubrics=[
-    {dim:'1. Overall Planning & Layout<br/><span style="font-weight:400;font-size:12px;color:#64748b">整体规划与布局</span>',criteria:'Room zoning is reasonable, furniture placement is orderly; planning and design based on space size, area and quantity of items are appropriate<br/><span style="font-size:12px;color:#64748b">房间分区合理，家具摆放有序；结合空间大小规划设计，面积、物品数量安排得当</span>',stars:5},
-    {dim:'2. Practical & Scientific Design<br/><span style="font-weight:400;font-size:12px;color:#64748b">实用与科学设计</span>',criteria:'Full consideration of lighting and ventilation, reasonable door and window placement; overall layout follows common sense of living, comfortable to live in<br/><span style="font-size:12px;color:#64748b">充分考虑采光、通风，门窗位置设计合理；整体布局符合生活常识，住着舒适</span>',stars:5},
-    {dim:'3. Budget & Mathematical Planning<br/><span style="font-weight:400;font-size:12px;color:#64748b">预算与数理规划</span>',criteria:'Choosing furniture and decorations within the preset budget, accurate calculation, not exceeding the budget; clear quantity and size planning<br/><span style="font-size:12px;color:#64748b">按照预设预算挑选家具、装饰，计算准确，没有超出预算；数量、尺寸规划清晰</span>',stars:5},
-    {dim:'4. Visual Aesthetics & Creativity<br/><span style="font-weight:400;font-size:12px;color:#64748b">视觉美感与创意</span>',criteria:'Harmonious color matching, neat and beautiful presentation; novel and unique design ideas with personal ingenuity<br/><span style="font-size:12px;color:#64748b">色彩搭配和谐，画面整洁美观；设计想法新颖独特，有自己的巧思</span>',stars:5},
-    {dim:'5. English Expression & Presentation<br/><span style="font-weight:400;font-size:12px;color:#64748b">英语表达展示</span>',criteria:'Able to introduce rooms, items and design ideas in complete English, accurate vocabulary and sentence usage, confident expression<br/><span style="font-size:12px;color:#64748b">能用英语完整介绍房间、物品、设计想法，词汇、句子使用准确，表达大方</span>',stars:5},
-    {dim:'6. Inquiry & Completion<br/><span style="font-weight:400;font-size:12px;color:#64748b">探究与完成度</span>',criteria:'Serious completion of the entire design process, comprehensive thinking, complete work with rich details<br/><span style="font-size:12px;color:#64748b">认真完成整个设计过程，思考全面，作品完整，细节丰富</span>',stars:5}
+    {dim:'1. Creative Design<br/><span style="font-weight:400;font-size:12px;color:#64748b">设计有创意</span>',criteria:'Independently create original house space design, integrate personalized creativity and living needs, and arrange all functional spaces reasonably.<br/><span style="font-size:12px;color:#64748b">自主原创房屋空间设计，融合个性化创意与生活需求，合理规划各类功能空间。</span>',stars:1},
+    {dim:'2. Reasonable Budget Planning<br/><span style="font-weight:400;font-size:12px;color:#64748b">预算规划合理</span>',criteria:'The budget has clear classification, realistic figures, prioritized fund allocation and complete cost planning thinking.<br/><span style="font-size:12px;color:#64748b">预算分类清晰，数据贴合现实，资金分配主次分明，具备完整的成本规划思路。</span>',stars:1},
+    {dim:'3. Confident and Fluent English Expression<br/><span style="font-weight:400;font-size:12px;color:#64748b">英文表达自信流利</span>',criteria:'Use rich and well-organized language without repetitive sentence patterns; speak confidently and smoothly with clear pronunciation and pleasant intonation, and deliver the introduction in a logical order.<br/><span style="font-size:12px;color:#64748b">介绍用语丰富有序，句式不重复；口语表达自信流畅，发音清晰、语调优美，讲解条理分明。</span>',stars:1}
   ];
   rubrics.forEach((r,i)=>{
     const bg=i%2===0?'#ffffff':'#f8fafc';
@@ -4397,17 +4456,19 @@ function showOverview(){
     html+=`<td style="padding:8px 6px;border-bottom:1px solid #e2e8f0;font-weight:600;color:#1e293b;vertical-align:top">${r.dim}</td>`;
     html+=`<td style="padding:8px 6px;border-bottom:1px solid #e2e8f0;color:#475569;line-height:1.5">${r.criteria}</td>`;
     html+=`<td style="padding:8px 6px;border-bottom:1px solid #e2e8f0;text-align:center;vertical-align:middle">`;
-    for(let s=1;s<=5;s++){
+    for(let s=1;s<=r.stars;s++){
       html+=`<span style="cursor:pointer;font-size:18px;color:#d1d5db" data-rubric="${i}" data-star="${s}" onclick="rateStar(this,${i},${s})">★</span> `;
     }
     html+=`</td></tr>`;
   });
   html+=`</tbody></table>`;
   html+=`</div>`;
+  const storedEditCode=getStoredEditCode(currentStudent);
   html+=`<div class="submit-design-panel">`;
-  html+=`<h3>Submit Design / 提交设计</h3>`;
-  html+=`<p>${escapeHtml(currentStudent)}, submit your design to the class server. Netlify will keep one record for the teacher to review. / 提交后，老师可以在 Netlify 后台看到这份设计数据。</p>`;
-  html+=`<button class="btn-primary" id="submitDesignBtn" onclick="submitDesignToServer()">Submit Design / 提交设计</button>`;
+  html+=`<h3>${currentEditingSubmissionId?'Save Changes / 保存修改':'Submit Design / 提交设计'}</h3>`;
+  html+=`<p>${currentEditingSubmissionId?'You are editing your own submission. Save changes will replace the old version. / 你正在修改自己的方案，保存后会替换旧版本。':escapeHtml(currentStudent)+', submit your design to the class server. Netlify will keep one record for the teacher to review. / 提交后，老师可以在 Netlify 后台看到这份设计数据。'}</p>`;
+  html+=`<div class="submit-edit-box"><label for="editCodeInput">Edit Code / 修改码</label><input id="editCodeInput" type="text" placeholder="Create or enter your edit code" value="${escapeHtml(currentEditingCode||storedEditCode)}"><div class="submit-edit-note">${currentEditingSubmissionId?'Enter the same code to confirm your update. / 输入同一个修改码确认更新。':'Use this code later if you want to edit your own design. / 以后想修改自己的方案，需要用这个修改码。'}</div></div>`;
+  html+=`<button class="btn-primary" id="submitDesignBtn" onclick="submitDesignToServer()">${currentEditingSubmissionId?'Save Changes / 保存修改':'Submit Design / 提交设计'}</button>`;
   html+=`<div class="submit-status" id="submitDesignStatus"></div>`;
   html+=`</div>`;
   wrap.innerHTML=html;
@@ -4420,13 +4481,18 @@ let overviewRaycaster=null,overviewPointer=null,overviewRooms=[],overviewFocused
 function rateStar(el,rubricIdx,starVal){
   const row=el.parentElement;
   const stars=row.querySelectorAll('span[data-rubric="'+rubricIdx+'"]');
+  const isActive=el.style.color==='rgb(245, 158, 11)'||el.style.color==='#f59e0b';
+  if(isActive){
+    stars.forEach(s=>{s.style.color='#d1d5db';});
+    return;
+  }
   stars.forEach((s,i)=>{
     s.style.color=(i<starVal)?'#f59e0b':'#d1d5db';
   });
 }
 
 function setReviewStars(idx,starVal){
-  const value=Math.max(1,Math.min(5,Number(starVal)||5));
+  const value=Math.max(1,Math.min(REVIEW_MAX_STARS,Number(starVal)||REVIEW_MAX_STARS));
   const input=document.getElementById('reviewStars'+idx);
   if(input)input.value=String(value);
   const stars=document.querySelectorAll('#reviewStarsWrap'+idx+' button[data-star]');
@@ -4434,21 +4500,72 @@ function setReviewStars(idx,starVal){
     stars[i].classList.toggle('active',i<value);
   }
   const label=document.getElementById('reviewStarsLabel'+idx);
-  if(label)label.textContent=value+' / 5';
+  if(label)label.textContent=value+' / '+REVIEW_MAX_STARS;
 }
 
 function renderDisplayStars(value,showScore){
-  const numeric=Math.max(0,Math.min(5,Number(value)||0));
+  const numeric=Math.max(0,Math.min(REVIEW_MAX_STARS,Number(value)||0));
   const rounded=Math.round(numeric);
   let html='<span class="display-stars">';
-  for(let i=1;i<=5;i++){
+  for(let i=1;i<=REVIEW_MAX_STARS;i++){
     html+='<span class="star'+(i<=rounded?' active':'')+'">★</span>';
   }
   if(showScore){
-    html+='<span class="score">'+numeric.toFixed(1)+'/5</span>';
+    html+='<span class="score">'+numeric.toFixed(1)+'/'+REVIEW_MAX_STARS+'</span>';
   }
   html+='</span>';
   return html;
+}
+
+function getSelfEvaluationResults(){
+  const items=[
+    {key:'creative_design',label:'Creative Design / 设计有创意'},
+    {key:'budget_planning',label:'Reasonable Budget Planning / 预算规划合理'},
+    {key:'english_expression',label:'Confident and Fluent English Expression / 英文表达自信流利'}
+  ];
+  return items.map((item,idx)=>{
+    const star=document.querySelector('span[data-rubric="'+idx+'"][data-star="1"]');
+    const active=!!star&&(star.style.color==='rgb(245, 158, 11)'||star.style.color==='#f59e0b');
+    return {key:item.key,label:item.label,selected:active};
+  });
+}
+
+function renderSelfEvaluationSummary(items){
+  const rows=Array.isArray(items)?items:[];
+  if(!rows.length)return '<div class="teacher-note-empty">No self evaluation saved yet</div>';
+  let html='';
+  rows.forEach(item=>{
+    html+='<div class="teacher-note-review"><b>'+escapeHtml(item.label||'Self Evaluation')+'</b><br><span class="display-stars"><span class="star'+(item.selected?' active':'')+'">★</span></span></div>';
+  });
+  return html;
+}
+
+function normalizeStudentName(name){
+  return String(name||'').trim().toLowerCase();
+}
+
+function getEditCodeStorageKey(name){
+  return 'houseDesignEditCode_'+encodeURIComponent(normalizeStudentName(name));
+}
+
+function getStoredEditCode(name){
+  try{return localStorage.getItem(getEditCodeStorageKey(name))||'';}catch(e){return '';}
+}
+
+function setStoredEditCode(name,code){
+  try{
+    if(name&&code)localStorage.setItem(getEditCodeStorageKey(name),code);
+  }catch(e){}
+}
+
+function getCurrentEditCode(){
+  const input=document.getElementById('editCodeInput');
+  return ((input&&input.value)||'').trim();
+}
+
+function clearEditingState(){
+  currentEditingSubmissionId=null;
+  currentEditingCode='';
 }
 
 function escapeHtml(value){
@@ -4465,6 +4582,7 @@ function buildDesignSubmission(){
     style:chosenStyle,
     styleName:chosenStyle&&STYLES[chosenStyle]?STYLES[chosenStyle].name+' '+STYLES[chosenStyle].nameCn:'',
     rooms:savedDesigns,
+    selfEvaluation:getSelfEvaluationResults(),
     designedRooms:designedRooms,
     totalItems:totalItems,
     submittedAt:new Date().toISOString(),
@@ -4544,7 +4662,17 @@ function submitDesignToServer(){
     setSubmitStatus('Open the Netlify website to submit. Local file:// cannot submit to the server.','#ef4444');
     return;
   }
+  const editCode=getCurrentEditCode();
+  if(!editCode){
+    setSubmitStatus('Please enter your edit code.','#ef4444');
+    return;
+  }
   const payload=buildDesignSubmission();
+  setStoredEditCode(name,editCode);
+  if(currentEditingSubmissionId){
+    submitDesignUpdate(payload,editCode,btn);
+    return;
+  }
   const frameName='netlifySubmitFrame_'+Date.now();
   const frame=document.createElement('iframe');
   frame.name=frameName;
@@ -4582,6 +4710,7 @@ function submitDesignToServer(){
     'form-name':'house-design-submissions',
     'student_name':payload.studentName,
     'style':payload.styleName||payload.style||'',
+    'edit_code':editCode,
     'design_json':JSON.stringify(payload),
     'submitted_at':payload.submittedAt
   };
@@ -4599,10 +4728,57 @@ function submitDesignToServer(){
   setTimeout(()=>{try{form.remove();}catch(e){}},1000);
 }
 
+function submitDesignUpdate(payload,editCode,btn){
+  if(btn){btn.disabled=true;btn.textContent='Saving...';}
+  setSubmitStatus('Saving changes...','#2563eb');
+  const xhr=new XMLHttpRequest();
+  xhr.open('POST','/.netlify/functions/edit-submission',true);
+  xhr.setRequestHeader('Content-Type','application/json');
+  xhr.onreadystatechange=function(){
+    if(xhr.readyState!==4)return;
+    let data={};
+    try{data=JSON.parse(xhr.responseText||'{}');}catch(e){}
+    if(xhr.status<200||xhr.status>=300||data.error){
+      if(btn){btn.disabled=false;btn.textContent='Save Changes / 保存修改';}
+      setSubmitStatus((data&&data.error)||'Could not save changes.','#ef4444');
+      return;
+    }
+    clearEditingState();
+    setSubmitStatus('Changes saved successfully.','#16a34a');
+    if(btn){btn.disabled=true;btn.textContent='Saved';}
+    loadClassSubmissions();
+  };
+  xhr.onerror=function(){
+    if(btn){btn.disabled=false;btn.textContent='Save Changes / 保存修改';}
+    setSubmitStatus('Could not reach the edit function.','#ef4444');
+  };
+  xhr.send(JSON.stringify({
+    action:'update',
+    submission_id:currentEditingSubmissionId,
+    student_name:payload.studentName,
+    edit_code:editCode,
+    design_payload:payload
+  }));
+}
+
 const TEACHER_BOARD_CODE='becky2026';
+const REVIEW_MAX_STARS=3;
 let classSubmissions=[];
 let teacherBoardSubmissions=[];
+let currentEditingSubmissionId=null;
+let currentEditingCode='';
+function toggleToolsMenu(){
+  const box=document.querySelector('.floating-tools');
+  if(box)box.classList.toggle('open');
+}
+
+function closeToolsMenu(){
+  const box=document.querySelector('.floating-tools');
+  if(box)box.classList.remove('open');
+}
+
 function openSubmissionMenu(){
+  closeToolsMenu();
   const drawer=document.getElementById('submissionDrawer');
   if(drawer)drawer.classList.add('open');
   loadClassSubmissions();
@@ -4637,6 +4813,7 @@ function setTeacherStatus(text,color){
 }
 
 function openTeacherEntry(){
+  closeToolsMenu();
   if(localStorage.getItem('teacherBoardUnlocked')==='yes'){
     openTeacherBoard();
     return;
@@ -4677,6 +4854,89 @@ function openTeacherBoard(){
 function closeTeacherBoard(){
   const board=document.getElementById('teacherBoard');
   if(board)board.classList.remove('open');
+}
+
+function teacherManageSubmissions(action,payload,onSuccess){
+  const xhr=new XMLHttpRequest();
+  xhr.open('POST','/.netlify/functions/manage-submissions',true);
+  xhr.setRequestHeader('Content-Type','application/json');
+  xhr.onreadystatechange=function(){
+    if(xhr.readyState!==4)return;
+    let data=null;
+    try{data=JSON.parse(xhr.responseText||'{}');}catch(e){}
+    if(xhr.status<200||xhr.status>=300){
+      alert((data&&data.error)||'Teacher action failed.');
+      return;
+    }
+    if(data&&data.error){
+      alert(data.error);
+      return;
+    }
+    if(onSuccess)onSuccess(data||{});
+  };
+  xhr.onerror=function(){
+    alert('Could not reach the teacher management function.');
+  };
+  xhr.send(JSON.stringify(Object.assign({
+    teacher_code:TEACHER_BOARD_CODE,
+    action:action
+  },payload||{})));
+}
+
+function teacherDeleteSubmission(idx){
+  const item=teacherBoardSubmissions[idx];
+  if(!item||!item.id)return;
+  const ok=confirm('Delete this submission and its reviews?');
+  if(!ok)return;
+  teacherManageSubmissions('delete_one',{submission_id:item.id},function(){
+    loadTeacherBoard();
+    loadClassSubmissions();
+  });
+}
+
+function teacherResetAllSubmissions(){
+  const ok=confirm('Delete ALL submissions and ALL reviews?');
+  if(!ok)return;
+  teacherManageSubmissions('reset_all',{},function(){
+    loadTeacherBoard();
+    loadClassSubmissions();
+  });
+}
+
+function teacherResetEditCode(idx){
+  const item=teacherBoardSubmissions[idx];
+  if(!item||!item.id)return;
+  const nextCode=window.prompt('Enter a new edit code for '+(item.studentName||'this student')+'.','edit'+String(Date.now()).slice(-4));
+  if(nextCode==null)return;
+  const newCode=nextCode.trim();
+  if(!newCode){
+    alert('Please enter a new edit code.');
+    return;
+  }
+  const xhr=new XMLHttpRequest();
+  xhr.open('POST','/.netlify/functions/edit-submission',true);
+  xhr.setRequestHeader('Content-Type','application/json');
+  xhr.onreadystatechange=function(){
+    if(xhr.readyState!==4)return;
+    let data={};
+    try{data=JSON.parse(xhr.responseText||'{}');}catch(e){}
+    if(xhr.status<200||xhr.status>=300||data.error){
+      alert((data&&data.error)||'Could not reset the edit code.');
+      return;
+    }
+    alert('New edit code for '+(item.studentName||'student')+': '+newCode);
+    loadTeacherBoard();
+    loadClassSubmissions();
+  };
+  xhr.onerror=function(){
+    alert('Could not reach the edit reset function.');
+  };
+  xhr.send(JSON.stringify({
+    action:'teacher_reset_code',
+    teacher_code:TEACHER_BOARD_CODE,
+    submission_id:item.id,
+    new_edit_code:newCode
+  }));
 }
 
 function fetchSubmissionsData(onSuccess,onFailure){
@@ -4739,26 +4999,23 @@ function renderTeacherBoard(){
     setTeacherBoardBody('<div class="submission-card"><h3>No submissions yet</h3><div class="submission-meta">When students submit designs, they will appear here.</div></div>');
     return;
   }
-  let reviewTotal=0, ratedCount=0, avgSum=0;
+  let reviewTotal=0, selfEvalSelected=0;
   items.forEach(item=>{
     reviewTotal+=(item.reviewCount||0);
-    if(item.averageStars){
-      ratedCount++;
-      avgSum+=Number(item.averageStars)||0;
-    }
+    const selfEval=((item.design&&item.design.selfEvaluation)||[]);
+    selfEvalSelected+=selfEval.filter(entry=>entry&&entry.selected).length;
   });
-  const avgClassRating=ratedCount?(avgSum/ratedCount):0;
   let statsHtml='';
   statsHtml+='<div class="teacher-stat"><b>'+items.length+'</b><span>Designs</span></div>';
   statsHtml+='<div class="teacher-stat"><b>'+reviewTotal+'</b><span>Peer Reviews</span></div>';
-  statsHtml+='<div class="teacher-stat"><b>'+(avgClassRating?avgClassRating.toFixed(1):'0.0')+'</b><span>Average Rating</span></div>';
+  statsHtml+='<div class="teacher-stat"><b>'+selfEvalSelected+'</b><span>Self Eval Stars</span></div>';
   setTeacherBoardStats(statsHtml);
   let html='<div class="teacher-board-grid">';
   items.forEach((item,idx)=>{
     html+='<div class="teacher-note">';
     html+='<h3>'+escapeHtml(item.studentName||'Student')+'</h3>';
     html+='<div class="teacher-note-meta">'+escapeHtml(item.styleName||item.style||'')+'<br>'+escapeHtml(item.submittedAt||'')+'</div>';
-    html+='<div class="teacher-note-section"><h4>Class Rating</h4>'+(item.averageStars?renderDisplayStars(item.averageStars,true):'<div class="teacher-note-empty">No ratings yet</div>')+'</div>';
+    html+='<div class="teacher-note-section"><h4>Self Evaluation</h4>'+renderSelfEvaluationSummary(item.design&&item.design.selfEvaluation)+'</div>';
     html+='<div class="teacher-note-section"><h4>Peer Comments</h4>';
     if(item.reviews&&item.reviews.length){
       item.reviews.slice(0,4).forEach(review=>{
@@ -4768,7 +5025,7 @@ function renderTeacherBoard(){
       html+='<div class="teacher-note-empty">No comments yet</div>';
     }
     html+='</div>';
-    html+='<div class="teacher-note-actions"><button class="btn-primary" onclick="loadTeacherSubmissionDesign('+idx+')">Open Design</button></div>';
+    html+='<div class="teacher-note-actions"><button class="btn-primary" onclick="loadTeacherSubmissionDesign('+idx+')">Open Design</button><button class="btn-secondary" onclick="teacherResetEditCode('+idx+')">Reset Edit Code</button><button class="btn-danger" onclick="teacherDeleteSubmission('+idx+')">Delete</button></div>';
     html+='</div>';
   });
   html+='</div>';
@@ -4786,17 +5043,20 @@ function renderClassSubmissions(){
     html+='<div class="submission-card">';
     html+='<h3>'+escapeHtml(item.studentName||'Student')+'</h3>';
     html+='<div class="submission-meta">'+escapeHtml(item.styleName||item.style||'')+'<br>'+escapeHtml(item.submittedAt||'')+'<br>'+stars+' · '+(item.reviewCount||0)+' reviews</div>';
-    html+='<div class="submission-actions"><button class="btn-primary" onclick="loadSubmissionDesign('+idx+')">View Design / 查看</button><button class="btn-secondary" onclick="toggleReviewBox('+idx+')">Review / 评价</button></div>';
+    html+='<div class="submission-actions"><button class="btn-primary" onclick="loadSubmissionDesign('+idx+')">View Design / 查看</button><button class="btn-secondary" onclick="requestEditSubmission('+idx+')">Edit My Design / 修改我的设计</button><button class="btn-secondary" onclick="toggleReviewBox('+idx+')">Review / 评价</button></div>';
     html+='<div class="review-box" id="reviewBox'+idx+'" style="display:none">';
     html+='<input id="reviewerName'+idx+'" placeholder="Your name / 你的名字">';
-    html+='<input type="hidden" id="reviewStars'+idx+'" value="5">';
+    html+='<div class="review-rubric">';
+    html+='<div><b>1. Creative Design</b> 设计有创意</div>';
+    html+='<div><b>2. Reasonable Budget Planning</b> 预算规划合理</div>';
+    html+='<div><b>3. Confident and Fluent English Expression</b> 英文表达自信流利</div>';
+    html+='</div>';
+    html+='<input type="hidden" id="reviewStars'+idx+'" value="3">';
     html+='<div class="review-stars" id="reviewStarsWrap'+idx+'">';
     html+='<button type="button" class="active" data-star="1" onclick="setReviewStars('+idx+',1)">★</button>';
     html+='<button type="button" class="active" data-star="2" onclick="setReviewStars('+idx+',2)">★</button>';
     html+='<button type="button" class="active" data-star="3" onclick="setReviewStars('+idx+',3)">★</button>';
-    html+='<button type="button" class="active" data-star="4" onclick="setReviewStars('+idx+',4)">★</button>';
-    html+='<button type="button" class="active" data-star="5" onclick="setReviewStars('+idx+',5)">★</button>';
-    html+='<span class="review-stars-label" id="reviewStarsLabel'+idx+'">5 / 5</span>';
+    html+='<span class="review-stars-label" id="reviewStarsLabel'+idx+'">3 / 3</span>';
     html+='</div>';
     html+='<textarea id="reviewComment'+idx+'" placeholder="Comment / 评价"></textarea>';
     html+='<button class="btn-primary" id="reviewBtn'+idx+'" onclick="submitReview('+idx+')">Submit Review / 提交评价</button>';
@@ -4824,6 +5084,7 @@ function loadSubmissionDesign(idx){
     alert('This submission does not contain design JSON.');
     return;
   }
+  clearEditingState();
   savedDesigns=JSON.parse(JSON.stringify(item.design.rooms));
   chosenStyle=item.design.style||chosenStyle||'modern';
   studentName=item.studentName||item.design.studentName||studentName;
@@ -4832,12 +5093,72 @@ function loadSubmissionDesign(idx){
   showOverview();
 }
 
+function requestEditSubmission(idx){
+  const item=classSubmissions[idx];
+  if(!item||!item.id)return;
+  const currentName=(getStudentName()||'').trim();
+  if(!currentName){
+    alert('Please enter your name on the first page first.');
+    return;
+  }
+  if(normalizeStudentName(currentName)!==normalizeStudentName(item.studentName||'')){
+    alert('Your name must match this submission before you can edit it.');
+    return;
+  }
+  const defaultCode=getStoredEditCode(currentName)||'';
+  const editCode=window.prompt('Enter your edit code to modify your design.',defaultCode);
+  if(editCode==null)return;
+  verifyEditSubmission(item.id,currentName,editCode.trim(),function(){
+    currentEditingSubmissionId=item.id;
+    currentEditingCode=editCode.trim();
+    savedDesigns=JSON.parse(JSON.stringify(item.design.rooms||{}));
+    chosenStyle=item.design.style||chosenStyle||'modern';
+    studentName=item.studentName||currentName;
+    localStorage.setItem('houseDesignStudentName',studentName);
+    closeSubmissionMenu();
+    goToRoom();
+  });
+}
+
+function verifyEditSubmission(submissionId,studentName,editCode,onSuccess){
+  if(!editCode){
+    alert('Please enter your edit code.');
+    return;
+  }
+  const xhr=new XMLHttpRequest();
+  xhr.open('POST','/.netlify/functions/edit-submission',true);
+  xhr.setRequestHeader('Content-Type','application/json');
+  xhr.onreadystatechange=function(){
+    if(xhr.readyState!==4)return;
+    let data={};
+    try{data=JSON.parse(xhr.responseText||'{}');}catch(e){}
+    if(xhr.status<200||xhr.status>=300||data.error){
+      let msg=(data&&data.error)||'Edit verification failed.';
+      if(/edit code/i.test(msg))msg+=' Ask your teacher to reset it if you forgot it.';
+      alert(msg);
+      return;
+    }
+    setStoredEditCode(studentName,editCode);
+    if(onSuccess)onSuccess(data);
+  };
+  xhr.onerror=function(){
+    alert('Could not reach the edit verification function.');
+  };
+  xhr.send(JSON.stringify({
+    action:'verify',
+    submission_id:submissionId,
+    student_name:studentName,
+    edit_code:editCode
+  }));
+}
+
 function loadTeacherSubmissionDesign(idx){
   const item=teacherBoardSubmissions[idx];
   if(!item||!item.design||!item.design.rooms){
     alert('This submission does not contain design JSON.');
     return;
   }
+  clearEditingState();
   savedDesigns=JSON.parse(JSON.stringify(item.design.rooms));
   chosenStyle=item.design.style||chosenStyle||'modern';
   studentName=item.studentName||item.design.studentName||studentName;
@@ -4850,7 +5171,7 @@ function submitReview(idx){
   const item=classSubmissions[idx];
   if(!item)return;
   const reviewer=(document.getElementById('reviewerName'+idx).value||getStudentName()||'Reviewer').trim();
-  const stars=document.getElementById('reviewStars'+idx).value||'5';
+  const stars=document.getElementById('reviewStars'+idx).value||String(REVIEW_MAX_STARS);
   const comment=(document.getElementById('reviewComment'+idx).value||'').trim();
   const status=document.getElementById('reviewStatus'+idx);
   const btn=document.getElementById('reviewBtn'+idx);
@@ -6457,6 +6778,11 @@ if(teacherCodeInput){
     }
   });
 }
+document.addEventListener('click',function(e){
+  const tools=document.querySelector('.floating-tools');
+  if(!tools)return;
+  if(!tools.contains(e.target))closeToolsMenu();
+});
 </script>
 </body>
 </html>
