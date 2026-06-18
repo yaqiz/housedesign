@@ -1462,8 +1462,10 @@
   .submit-design-panel p{font-size:13px;color:#64748b;line-height:1.6;margin-bottom:12px}
   .submit-design-panel button{padding:12px 22px;border-radius:10px;font-size:15px;font-weight:700}
   .submit-status{margin-top:10px;font-size:13px;font-weight:700;color:#475569;min-height:20px}
-  .submission-toggle{position:fixed;top:14px;right:14px;z-index:120;background:#2563eb;color:#fff;border-radius:10px;padding:10px 14px;font-size:14px;font-weight:800;box-shadow:0 6px 18px rgba(37,99,235,.24)}
-  .teacher-toggle{position:fixed;top:60px;right:14px;z-index:120;background:#7c3aed;color:#fff;border-radius:10px;padding:10px 14px;font-size:14px;font-weight:800;box-shadow:0 6px 18px rgba(124,58,237,.24)}
+  .floating-tools{position:fixed;top:10px;right:10px;z-index:120;display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+  .submission-toggle,.teacher-toggle{position:relative;top:auto;right:auto;color:#fff;border-radius:10px;padding:9px 12px;font-size:13px;font-weight:800;box-shadow:0 6px 18px rgba(15,23,42,.18);min-width:132px;text-align:center}
+  .submission-toggle{background:#2563eb}
+  .teacher-toggle{background:#7c3aed}
   .submission-drawer{position:fixed;top:0;right:0;width:360px;max-width:92vw;height:100%;background:#ffffff;border-left:2px solid #dbeafe;box-shadow:-8px 0 24px rgba(15,23,42,.16);z-index:140;transform:translateX(105%);transition:transform .22s ease;display:flex;flex-direction:column}
   .submission-drawer.open{transform:translateX(0)}
   .submission-head{padding:14px 16px;border-bottom:1.5px solid #e2e8f0;display:flex;align-items:center;gap:10px}
@@ -1519,7 +1521,7 @@
   .teacher-note-empty{font-size:12px;color:#94a3b8;font-style:italic}
   .teacher-note-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
   .teacher-note-actions button{border-radius:10px;padding:9px 11px;font-size:12px;font-weight:800}
-  @media (max-width:744px){.submission-toggle{top:8px;right:8px;padding:8px 10px;font-size:12px}.teacher-toggle{top:50px;right:8px;padding:8px 10px;font-size:12px}.submission-drawer{width:100%;max-width:100vw}.teacher-board-head{padding:14px 14px 12px}.teacher-board-stats{padding:12px 14px 0}.teacher-board-body{padding:14px}}
+  @media (max-width:744px){.floating-tools{top:8px;right:8px;gap:6px}.submission-toggle,.teacher-toggle{padding:8px 10px;font-size:12px;min-width:118px}.submission-drawer{width:100%;max-width:100vw}.teacher-board-head{padding:14px 14px 12px}.teacher-board-stats{padding:12px 14px 0}.teacher-board-body{padding:14px}}
 
   /* === Flex gap fallback for old Android (Chrome < 84) === */
   @supports not (gap:1em){
@@ -1564,8 +1566,10 @@
 </form>
 
 
-<button class="submission-toggle" onclick="openSubmissionMenu()">Submissions</button>
-<button class="teacher-toggle" onclick="openTeacherEntry()">Teacher Board</button>
+<div class="floating-tools">
+  <button class="submission-toggle" onclick="openSubmissionMenu()">Submissions</button>
+  <button class="teacher-toggle" onclick="openTeacherEntry()">Teacher Board</button>
+</div>
 <div class="submission-drawer" id="submissionDrawer">
   <div class="submission-head">
     <h2>Class Submissions</h2>
