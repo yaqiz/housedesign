@@ -1462,6 +1462,24 @@
   .submit-design-panel p{font-size:13px;color:#64748b;line-height:1.6;margin-bottom:12px}
   .submit-design-panel button{padding:12px 22px;border-radius:10px;font-size:15px;font-weight:700}
   .submit-status{margin-top:10px;font-size:13px;font-weight:700;color:#475569;min-height:20px}
+  .submission-toggle{position:fixed;top:14px;right:14px;z-index:120;background:#2563eb;color:#fff;border-radius:10px;padding:10px 14px;font-size:14px;font-weight:800;box-shadow:0 6px 18px rgba(37,99,235,.24)}
+  .submission-drawer{position:fixed;top:0;right:0;width:360px;max-width:92vw;height:100%;background:#ffffff;border-left:2px solid #dbeafe;box-shadow:-8px 0 24px rgba(15,23,42,.16);z-index:140;transform:translateX(105%);transition:transform .22s ease;display:flex;flex-direction:column}
+  .submission-drawer.open{transform:translateX(0)}
+  .submission-head{padding:14px 16px;border-bottom:1.5px solid #e2e8f0;display:flex;align-items:center;gap:10px}
+  .submission-head h2{font-size:18px;color:#1e40af;flex:1}
+  .submission-close{background:#f1f5f9;color:#334155;border-radius:8px;width:36px;height:36px;font-size:20px;font-weight:800}
+  .submission-body{padding:12px;overflow-y:auto;-webkit-overflow-scrolling:touch;flex:1}
+  .submission-card{border:1.5px solid #dbeafe;border-radius:10px;padding:10px 12px;margin-bottom:10px;background:#f8fbff}
+  .submission-card h3{font-size:15px;color:#1e293b;margin-bottom:4px}
+  .submission-meta{font-size:12px;color:#64748b;line-height:1.5;margin-bottom:8px}
+  .submission-actions{display:flex;gap:8px;flex-wrap:wrap}
+  .submission-actions button{border-radius:8px;padding:8px 10px;font-size:12px;font-weight:800}
+  .review-box{border-top:1px solid #e2e8f0;margin-top:10px;padding-top:10px}
+  .review-box input,.review-box textarea,.review-box select{width:100%;border:1.5px solid #cbd5e1;border-radius:8px;padding:8px 10px;font-size:13px;margin:5px 0;background:#fff}
+  .review-box textarea{min-height:64px;resize:vertical}
+  .review-list{margin-top:8px;font-size:12px;color:#475569}
+  .review-item{border-top:1px solid #e2e8f0;padding-top:6px;margin-top:6px;line-height:1.5}
+  @media (max-width:744px){.submission-toggle{top:8px;right:8px;padding:8px 10px;font-size:12px}.submission-drawer{width:100%;max-width:100vw}}
 
   /* === Flex gap fallback for old Android (Chrome < 84) === */
   @supports not (gap:1em){
@@ -1492,6 +1510,28 @@
   <textarea name="design_json"></textarea>
   <input type="text" name="submitted_at">
 </form>
+
+<form name="house-design-reviews" method="POST" data-netlify="true" netlify netlify-honeypot="review-bot-field" hidden>
+  <input type="hidden" name="form-name" value="house-design-reviews">
+  <input type="text" name="review-bot-field">
+  <input type="text" name="design_id">
+  <input type="text" name="reviewer_name">
+  <input type="number" name="stars">
+  <textarea name="comment"></textarea>
+  <input type="text" name="created_at">
+</form>
+
+
+<button class="submission-toggle" onclick="openSubmissionMenu()">Submissions</button>
+<div class="submission-drawer" id="submissionDrawer">
+  <div class="submission-head">
+    <h2>Class Submissions</h2>
+    <button class="submission-close" onclick="closeSubmissionMenu()">?</button>
+  </div>
+  <div class="submission-body" id="submissionBody">
+    <div class="submission-meta">Open to load class submissions.</div>
+  </div>
+</div>
 
 <div id="stage-style" class="stage active">
   <div class="style-intro">
@@ -4150,7 +4190,7 @@ function showOverview(){
   document.querySelectorAll('.stage').forEach(s=>s.classList.remove('active'));
   document.getElementById('stage-overview').classList.add('active');
   const s=STYLES[chosenStyle];
-  document.getElementById('overviewStyle').textContent=currentStudent+' - Style / ??: '+s.name+' '+s.nameCn;
+  document.getElementById('overviewStyle').textContent=currentStudent+' - Style: '+s.name+' '+s.nameCn;
   const wrap=document.getElementById('overviewWrap');
   const totalItems=Object.values(savedDesigns).reduce((s,a)=>Array.isArray(a)?s+a.length:s,0);
   const totalArea=Object.keys(savedDesigns).filter(k=>!k.includes('_size')).reduce((s,k)=>{
@@ -4160,7 +4200,7 @@ function showOverview(){
   const allDone=Object.keys(ROOMS).every(k=>savedDesigns[k]);
   // 3D Overview
   const designedCount=Object.keys(ROOMS).filter(k=>savedDesigns[k]).length;
-  let html='<div style="text-align:center;margin-bottom:12px"><h2 style="font-size:22px;color:#1e293b">?? '+escapeHtml(currentStudent)+'\'s Dream Home / '+escapeHtml(currentStudent)+' 的梦想之家</h2><p style="color:#64748b;font-size:14px">'+s.icon+' '+s.name+' '+s.nameCn+' ? '+designedCount+' rooms / 房间 ? '+totalItems+' furniture / 家具 ? '+totalArea+' m?</p></div>';
+  let html='<div style="text-align:center;margin-bottom:12px"><h2 style="font-size:22px;color:#1e293b">'+escapeHtml(currentStudent)+'\'s Dream Home</h2><p style="color:#64748b;font-size:14px">'+s.icon+' '+s.name+' '+s.nameCn+' - '+designedCount+' rooms - '+totalItems+' furniture - '+totalArea+' m2</p></div>';
   const ov3dH=window.innerWidth<745?'280px':window.innerWidth<1400?'360px':'420px';
   html+=`<div id="overview3d" style="width:100%;height:${ov3dH};border-radius:16px;overflow:hidden;border:2px solid #e2e8f0;background:#f0f4f8;position:relative;touch-action:none"><div style="position:absolute;left:10px;bottom:10px;z-index:2;background:rgba(255,255,255,.92);border:1px solid #dbe3ef;border-radius:8px;padding:6px 10px;font-size:12px;color:#475569">Tap a room to zoom inside - tap empty space to return / \u70b9\u51fb\u623f\u95f4\u653e\u5927\u67e5\u770b - \u70b9\u51fb\u7a7a\u767d\u8fd4\u56de</div></div>`;
   // Floor tabs
@@ -4399,6 +4439,149 @@ function submitDesignToServer(){
   setSubmitStatus('Submitting to Netlify...','#2563eb');
   submitted=true;
   form.submit();
+  setTimeout(()=>{try{form.remove();}catch(e){}},1000);
+}
+
+let classSubmissions=[];
+function openSubmissionMenu(){
+  const drawer=document.getElementById('submissionDrawer');
+  if(drawer)drawer.classList.add('open');
+  loadClassSubmissions();
+}
+
+function closeSubmissionMenu(){
+  const drawer=document.getElementById('submissionDrawer');
+  if(drawer)drawer.classList.remove('open');
+}
+
+function setSubmissionBody(html){
+  const body=document.getElementById('submissionBody');
+  if(body)body.innerHTML=html;
+}
+
+function loadClassSubmissions(){
+  setSubmissionBody('<div class="submission-meta">Loading submissions... / 正在加载作品...</div>');
+  const xhr=new XMLHttpRequest();
+  xhr.open('GET','/.netlify/functions/submissions?ts='+Date.now(),true);
+  xhr.onreadystatechange=function(){
+    if(xhr.readyState!==4)return;
+    if(xhr.status<200||xhr.status>=300){
+      setSubmissionBody('<div class="submission-card"><h3>Cannot load submissions</h3><div class="submission-meta">HTTP '+xhr.status+'. Check Netlify Functions.</div></div>');
+      return;
+    }
+    let data;
+    try{data=JSON.parse(xhr.responseText);}catch(e){
+      setSubmissionBody('<div class="submission-card"><h3>Bad response</h3><div class="submission-meta">The submissions function did not return JSON.</div></div>');
+      return;
+    }
+    if(data.setupRequired){
+      setSubmissionBody('<div class="submission-card"><h3>Setup required</h3><div class="submission-meta">'+escapeHtml(data.message)+'</div></div>');
+      return;
+    }
+    if(data.error){
+      setSubmissionBody('<div class="submission-card"><h3>Server error</h3><div class="submission-meta">'+escapeHtml(data.error)+'</div></div>');
+      return;
+    }
+    classSubmissions=data.designs||[];
+    renderClassSubmissions();
+  };
+  xhr.onerror=function(){
+    setSubmissionBody('<div class="submission-card"><h3>Network error</h3><div class="submission-meta">Could not reach the Netlify function.</div></div>');
+  };
+  xhr.send();
+}
+
+function renderClassSubmissions(){
+  if(!classSubmissions.length){
+    setSubmissionBody('<div class="submission-card"><h3>No submissions yet</h3><div class="submission-meta">Submit one design first, then refresh this panel.</div></div>');
+    return;
+  }
+  let html='<div class="submission-meta">'+classSubmissions.length+' submissions</div>';
+  classSubmissions.forEach((item,idx)=>{
+    const stars=item.averageStars?('★ '+item.averageStars.toFixed(1)):'No ratings yet';
+    html+='<div class="submission-card">';
+    html+='<h3>'+escapeHtml(item.studentName||'Student')+'</h3>';
+    html+='<div class="submission-meta">'+escapeHtml(item.styleName||item.style||'')+'<br>'+escapeHtml(item.submittedAt||'')+'<br>'+stars+' · '+(item.reviewCount||0)+' reviews</div>';
+    html+='<div class="submission-actions"><button class="btn-primary" onclick="loadSubmissionDesign('+idx+')">View Design / 查看</button><button class="btn-secondary" onclick="toggleReviewBox('+idx+')">Review / 评价</button></div>';
+    html+='<div class="review-box" id="reviewBox'+idx+'" style="display:none">';
+    html+='<input id="reviewerName'+idx+'" placeholder="Your name / 你的名字">';
+    html+='<select id="reviewStars'+idx+'"><option value="5">5 stars</option><option value="4">4 stars</option><option value="3">3 stars</option><option value="2">2 stars</option><option value="1">1 star</option></select>';
+    html+='<textarea id="reviewComment'+idx+'" placeholder="Comment / 评价"></textarea>';
+    html+='<button class="btn-primary" id="reviewBtn'+idx+'" onclick="submitReview('+idx+')">Submit Review / 提交评价</button>';
+    html+='<div class="submit-status" id="reviewStatus'+idx+'"></div>';
+    if(item.reviews&&item.reviews.length){
+      html+='<div class="review-list">';
+      item.reviews.slice(0,5).forEach(review=>{
+        html+='<div class="review-item"><b>'+escapeHtml(review.reviewerName)+'</b> · '+('★'.repeat(Math.max(0,Math.min(5,review.stars||0))))+'<br>'+escapeHtml(review.comment||'')+'</div>';
+      });
+      html+='</div>';
+    }
+    html+='</div></div>';
+  });
+  setSubmissionBody(html);
+}
+
+function toggleReviewBox(idx){
+  const box=document.getElementById('reviewBox'+idx);
+  if(box)box.style.display=box.style.display==='none'?'block':'none';
+}
+
+function loadSubmissionDesign(idx){
+  const item=classSubmissions[idx];
+  if(!item||!item.design||!item.design.rooms){
+    alert('This submission does not contain design JSON.');
+    return;
+  }
+  savedDesigns=JSON.parse(JSON.stringify(item.design.rooms));
+  chosenStyle=item.design.style||chosenStyle||'modern';
+  studentName=item.studentName||item.design.studentName||studentName;
+  localStorage.setItem('houseDesignStudentName',studentName);
+  closeSubmissionMenu();
+  showOverview();
+}
+
+function submitReview(idx){
+  const item=classSubmissions[idx];
+  if(!item)return;
+  const reviewer=(document.getElementById('reviewerName'+idx).value||getStudentName()||'Reviewer').trim();
+  const stars=document.getElementById('reviewStars'+idx).value||'5';
+  const comment=(document.getElementById('reviewComment'+idx).value||'').trim();
+  const status=document.getElementById('reviewStatus'+idx);
+  const btn=document.getElementById('reviewBtn'+idx);
+  if(!comment){if(status){status.textContent='Please write a comment.';status.style.color='#ef4444';}return;}
+  const frameName='reviewSubmitFrame_'+Date.now();
+  const frame=document.createElement('iframe');
+  frame.name=frameName;frame.style.display='none';
+  let submitted=false,finished=false;
+  const done=(ok,msg,color)=>{
+    if(finished)return;
+    finished=true;clearTimeout(timer);
+    if(status){status.textContent=msg;status.style.color=color;}
+    if(btn){btn.disabled=ok;btn.textContent=ok?'Review submitted':'Submit Review';}
+    setTimeout(()=>{try{frame.remove();}catch(e){}},1200);
+    if(ok)setTimeout(loadClassSubmissions,1200);
+  };
+  const timer=setTimeout(()=>done(false,'Still waiting. Check Netlify Forms.','#ef4444'),20000);
+  frame.onload=()=>{if(!submitted)return;done(true,'Review submitted.','#16a34a');};
+  document.body.appendChild(frame);
+  const form=document.createElement('form');
+  form.method='POST';form.action='/';form.target=frameName;form.style.display='none';
+  const fields={
+    'form-name':'house-design-reviews',
+    'design_id':item.id,
+    'reviewer_name':reviewer,
+    'stars':stars,
+    'comment':comment,
+    'created_at':new Date().toISOString()
+  };
+  Object.keys(fields).forEach(key=>{
+    const input=document.createElement(key==='comment'?'textarea':'input');
+    input.name=key;input.value=fields[key];form.appendChild(input);
+  });
+  document.body.appendChild(form);
+  if(btn){btn.disabled=true;btn.textContent='Submitting...';}
+  if(status){status.textContent='Submitting review...';status.style.color='#2563eb';}
+  submitted=true;form.submit();
   setTimeout(()=>{try{form.remove();}catch(e){}},1000);
 }
 
