@@ -1463,6 +1463,7 @@
   .submit-design-panel button{padding:12px 22px;border-radius:10px;font-size:15px;font-weight:700}
   .submit-status{margin-top:10px;font-size:13px;font-weight:700;color:#475569;min-height:20px}
   .submission-toggle{position:fixed;top:14px;right:14px;z-index:120;background:#2563eb;color:#fff;border-radius:10px;padding:10px 14px;font-size:14px;font-weight:800;box-shadow:0 6px 18px rgba(37,99,235,.24)}
+  .teacher-toggle{position:fixed;top:60px;right:14px;z-index:120;background:#7c3aed;color:#fff;border-radius:10px;padding:10px 14px;font-size:14px;font-weight:800;box-shadow:0 6px 18px rgba(124,58,237,.24)}
   .submission-drawer{position:fixed;top:0;right:0;width:360px;max-width:92vw;height:100%;background:#ffffff;border-left:2px solid #dbeafe;box-shadow:-8px 0 24px rgba(15,23,42,.16);z-index:140;transform:translateX(105%);transition:transform .22s ease;display:flex;flex-direction:column}
   .submission-drawer.open{transform:translateX(0)}
   .submission-head{padding:14px 16px;border-bottom:1.5px solid #e2e8f0;display:flex;align-items:center;gap:10px}
@@ -1487,7 +1488,38 @@
   .display-stars .score{font-size:12px;color:#64748b;margin-left:4px}
   .review-list{margin-top:8px;font-size:12px;color:#475569}
   .review-item{border-top:1px solid #e2e8f0;padding-top:6px;margin-top:6px;line-height:1.5}
-  @media (max-width:744px){.submission-toggle{top:8px;right:8px;padding:8px 10px;font-size:12px}.submission-drawer{width:100%;max-width:100vw}}
+  .teacher-auth{position:fixed;inset:0;background:rgba(15,23,42,.42);z-index:180;display:none;align-items:center;justify-content:center;padding:20px}
+  .teacher-auth.open{display:flex}
+  .teacher-auth-card{width:min(420px,92vw);background:#fff;border:2px solid #ddd6fe;border-radius:18px;padding:22px;box-shadow:0 18px 48px rgba(15,23,42,.24)}
+  .teacher-auth-card h3{font-size:24px;color:#5b21b6;margin-bottom:8px}
+  .teacher-auth-card p{font-size:14px;color:#64748b;line-height:1.6;margin-bottom:14px}
+  .teacher-auth-card input{width:100%;min-height:48px;border:1.5px solid #c4b5fd;border-radius:10px;padding:10px 12px;font-size:16px;background:#faf5ff}
+  .teacher-auth-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:14px}
+  .teacher-status{min-height:20px;margin-top:10px;font-size:13px;font-weight:700;color:#64748b}
+  .teacher-board{position:fixed;inset:0;z-index:170;background:#f8fafc;display:none;flex-direction:column}
+  .teacher-board.open{display:flex}
+  .teacher-board-head{padding:18px 20px 14px;background:linear-gradient(135deg,#faf5ff,#eff6ff);border-bottom:2px solid #ddd6fe;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .teacher-board-head h2{font-size:24px;color:#4c1d95;flex:1}
+  .teacher-board-sub{font-size:13px;color:#6b7280;width:100%}
+  .teacher-board-stats{display:flex;gap:10px;flex-wrap:wrap;padding:14px 20px 0}
+  .teacher-stat{background:#fff;border:1.5px solid #ddd6fe;border-radius:14px;padding:10px 14px;min-width:120px;box-shadow:0 4px 14px rgba(124,58,237,.08)}
+  .teacher-stat b{display:block;font-size:22px;color:#4c1d95}
+  .teacher-stat span{font-size:12px;color:#6b7280}
+  .teacher-board-body{padding:18px 20px 24px;overflow:auto;-webkit-overflow-scrolling:touch}
+  .teacher-board-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+  .teacher-note{background:#fffef0;border:1.5px solid #fde68a;border-radius:16px;padding:14px 14px 12px;box-shadow:0 10px 22px rgba(148,163,184,.12);position:relative}
+  .teacher-note:nth-child(3n+2){background:#eefcf8;border-color:#99f6e4}
+  .teacher-note:nth-child(3n+3){background:#f5f3ff;border-color:#c4b5fd}
+  .teacher-note:before{content:'';position:absolute;top:10px;right:12px;width:42px;height:10px;border-radius:999px;background:rgba(255,255,255,.65);box-shadow:0 1px 0 rgba(255,255,255,.8)}
+  .teacher-note h3{font-size:18px;color:#1f2937;margin-bottom:6px;padding-right:32px}
+  .teacher-note-meta{font-size:12px;color:#6b7280;line-height:1.6;margin-bottom:10px}
+  .teacher-note-section{margin-top:10px;padding-top:10px;border-top:1px dashed rgba(100,116,139,.25)}
+  .teacher-note-section h4{font-size:12px;color:#475569;margin-bottom:6px;text-transform:uppercase;letter-spacing:.04em}
+  .teacher-note-review{font-size:13px;color:#334155;line-height:1.55;margin-top:6px;background:rgba(255,255,255,.55);border-radius:10px;padding:8px}
+  .teacher-note-empty{font-size:12px;color:#94a3b8;font-style:italic}
+  .teacher-note-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+  .teacher-note-actions button{border-radius:10px;padding:9px 11px;font-size:12px;font-weight:800}
+  @media (max-width:744px){.submission-toggle{top:8px;right:8px;padding:8px 10px;font-size:12px}.teacher-toggle{top:50px;right:8px;padding:8px 10px;font-size:12px}.submission-drawer{width:100%;max-width:100vw}.teacher-board-head{padding:14px 14px 12px}.teacher-board-stats{padding:12px 14px 0}.teacher-board-body{padding:14px}}
 
   /* === Flex gap fallback for old Android (Chrome < 84) === */
   @supports not (gap:1em){
@@ -1533,6 +1565,7 @@
 
 
 <button class="submission-toggle" onclick="openSubmissionMenu()">Submissions</button>
+<button class="teacher-toggle" onclick="openTeacherEntry()">Teacher Board</button>
 <div class="submission-drawer" id="submissionDrawer">
   <div class="submission-head">
     <h2>Class Submissions</h2>
@@ -1540,6 +1573,32 @@
   </div>
   <div class="submission-body" id="submissionBody">
     <div class="submission-meta">Open to load class submissions.</div>
+  </div>
+</div>
+
+<div class="teacher-auth" id="teacherAuth">
+  <div class="teacher-auth-card">
+    <h3>Teacher Board</h3>
+    <p>Enter the teacher code to open the class exhibition wall and review all student designs.</p>
+    <input id="teacherCodeInput" type="password" placeholder="Enter code">
+    <div class="teacher-status" id="teacherStatus"></div>
+    <div class="teacher-auth-actions">
+      <button class="btn-secondary" onclick="closeTeacherEntry()">Cancel</button>
+      <button class="btn-primary" onclick="unlockTeacherBoard()">Open Board</button>
+    </div>
+  </div>
+</div>
+
+<div class="teacher-board" id="teacherBoard">
+  <div class="teacher-board-head">
+    <h2>Teacher Board / Class Exhibition</h2>
+    <button class="btn-secondary" onclick="loadTeacherBoard()">Refresh</button>
+    <button class="btn-primary" onclick="closeTeacherBoard()">Close</button>
+    <div class="teacher-board-sub">Sticky-note view of all student designs and peer feedback.</div>
+  </div>
+  <div class="teacher-board-stats" id="teacherBoardStats"></div>
+  <div class="teacher-board-body" id="teacherBoardBody">
+    <div class="submission-meta">Open the board to load class submissions.</div>
   </div>
 </div>
 
@@ -4536,7 +4595,9 @@ function submitDesignToServer(){
   setTimeout(()=>{try{form.remove();}catch(e){}},1000);
 }
 
+const TEACHER_BOARD_CODE='becky2026';
 let classSubmissions=[];
+let teacherBoardSubmissions=[];
 function openSubmissionMenu(){
   const drawer=document.getElementById('submissionDrawer');
   if(drawer)drawer.classList.add('open');
@@ -4553,36 +4614,161 @@ function setSubmissionBody(html){
   if(body)body.innerHTML=html;
 }
 
-function loadClassSubmissions(){
-  setSubmissionBody('<div class="submission-meta">Loading submissions... / 正在加载作品...</div>');
+function setTeacherBoardBody(html){
+  const body=document.getElementById('teacherBoardBody');
+  if(body)body.innerHTML=html;
+}
+
+function setTeacherBoardStats(html){
+  const box=document.getElementById('teacherBoardStats');
+  if(box)box.innerHTML=html;
+}
+
+function setTeacherStatus(text,color){
+  const el=document.getElementById('teacherStatus');
+  if(el){
+    el.textContent=text||'';
+    el.style.color=color||'#64748b';
+  }
+}
+
+function openTeacherEntry(){
+  if(localStorage.getItem('teacherBoardUnlocked')==='yes'){
+    openTeacherBoard();
+    return;
+  }
+  const modal=document.getElementById('teacherAuth');
+  if(modal)modal.classList.add('open');
+  const input=document.getElementById('teacherCodeInput');
+  if(input){
+    input.value='';
+    setTimeout(()=>{try{input.focus();}catch(e){}},50);
+  }
+  setTeacherStatus('');
+}
+
+function closeTeacherEntry(){
+  const modal=document.getElementById('teacherAuth');
+  if(modal)modal.classList.remove('open');
+}
+
+function unlockTeacherBoard(){
+  const input=document.getElementById('teacherCodeInput');
+  const code=((input&&input.value)||'').trim();
+  if(code!==TEACHER_BOARD_CODE){
+    setTeacherStatus('Wrong code. Try again.','#ef4444');
+    return;
+  }
+  localStorage.setItem('teacherBoardUnlocked','yes');
+  closeTeacherEntry();
+  openTeacherBoard();
+}
+
+function openTeacherBoard(){
+  const board=document.getElementById('teacherBoard');
+  if(board)board.classList.add('open');
+  loadTeacherBoard();
+}
+
+function closeTeacherBoard(){
+  const board=document.getElementById('teacherBoard');
+  if(board)board.classList.remove('open');
+}
+
+function fetchSubmissionsData(onSuccess,onFailure){
   const xhr=new XMLHttpRequest();
   xhr.open('GET','/.netlify/functions/submissions?ts='+Date.now(),true);
   xhr.onreadystatechange=function(){
     if(xhr.readyState!==4)return;
     if(xhr.status<200||xhr.status>=300){
-      setSubmissionBody('<div class="submission-card"><h3>Cannot load submissions</h3><div class="submission-meta">HTTP '+xhr.status+'. Check Netlify Functions.</div></div>');
+      if(onFailure)onFailure('HTTP '+xhr.status+'. Check Netlify Functions.');
       return;
     }
     let data;
     try{data=JSON.parse(xhr.responseText);}catch(e){
-      setSubmissionBody('<div class="submission-card"><h3>Bad response</h3><div class="submission-meta">The submissions function did not return JSON.</div></div>');
+      if(onFailure)onFailure('The submissions function did not return JSON.');
       return;
     }
     if(data.setupRequired){
-      setSubmissionBody('<div class="submission-card"><h3>Setup required</h3><div class="submission-meta">'+escapeHtml(data.message)+'</div></div>');
+      if(onFailure)onFailure(data.message,true);
       return;
     }
     if(data.error){
-      setSubmissionBody('<div class="submission-card"><h3>Server error</h3><div class="submission-meta">'+escapeHtml(data.error)+'</div></div>');
+      if(onFailure)onFailure(data.error);
       return;
     }
-    classSubmissions=mergeSubmissions(data.designs||[]);
-    renderClassSubmissions();
+    if(onSuccess)onSuccess(mergeSubmissions(data.designs||[]));
   };
   xhr.onerror=function(){
-    setSubmissionBody('<div class="submission-card"><h3>Network error</h3><div class="submission-meta">Could not reach the Netlify function.</div></div>');
+    if(onFailure)onFailure('Could not reach the Netlify function.');
   };
   xhr.send();
+}
+
+function loadClassSubmissions(){
+  setSubmissionBody('<div class="submission-meta">Loading submissions... / 正在加载作品...</div>');
+  fetchSubmissionsData(function(designs){
+    classSubmissions=designs;
+    renderClassSubmissions();
+  },function(message,isSetup){
+    const title=isSetup?'Setup required':'Cannot load submissions';
+    setSubmissionBody('<div class="submission-card"><h3>'+title+'</h3><div class="submission-meta">'+escapeHtml(message)+'</div></div>');
+  });
+}
+
+function loadTeacherBoard(){
+  setTeacherBoardStats('');
+  setTeacherBoardBody('<div class="submission-card"><h3>Loading board</h3><div class="submission-meta">Collecting student designs and peer reviews...</div></div>');
+  fetchSubmissionsData(function(designs){
+    teacherBoardSubmissions=designs;
+    renderTeacherBoard();
+  },function(message,isSetup){
+    const title=isSetup?'Setup required':'Cannot load teacher board';
+    setTeacherBoardBody('<div class="submission-card"><h3>'+title+'</h3><div class="submission-meta">'+escapeHtml(message)+'</div></div>');
+  });
+}
+
+function renderTeacherBoard(){
+  const items=teacherBoardSubmissions||[];
+  if(!items.length){
+    setTeacherBoardStats('<div class="teacher-stat"><b>0</b><span>Designs</span></div>');
+    setTeacherBoardBody('<div class="submission-card"><h3>No submissions yet</h3><div class="submission-meta">When students submit designs, they will appear here.</div></div>');
+    return;
+  }
+  let reviewTotal=0, ratedCount=0, avgSum=0;
+  items.forEach(item=>{
+    reviewTotal+=(item.reviewCount||0);
+    if(item.averageStars){
+      ratedCount++;
+      avgSum+=Number(item.averageStars)||0;
+    }
+  });
+  const avgClassRating=ratedCount?(avgSum/ratedCount):0;
+  let statsHtml='';
+  statsHtml+='<div class="teacher-stat"><b>'+items.length+'</b><span>Designs</span></div>';
+  statsHtml+='<div class="teacher-stat"><b>'+reviewTotal+'</b><span>Peer Reviews</span></div>';
+  statsHtml+='<div class="teacher-stat"><b>'+(avgClassRating?avgClassRating.toFixed(1):'0.0')+'</b><span>Average Rating</span></div>';
+  setTeacherBoardStats(statsHtml);
+  let html='<div class="teacher-board-grid">';
+  items.forEach((item,idx)=>{
+    html+='<div class="teacher-note">';
+    html+='<h3>'+escapeHtml(item.studentName||'Student')+'</h3>';
+    html+='<div class="teacher-note-meta">'+escapeHtml(item.styleName||item.style||'')+'<br>'+escapeHtml(item.submittedAt||'')+'</div>';
+    html+='<div class="teacher-note-section"><h4>Class Rating</h4>'+(item.averageStars?renderDisplayStars(item.averageStars,true):'<div class="teacher-note-empty">No ratings yet</div>')+'</div>';
+    html+='<div class="teacher-note-section"><h4>Peer Comments</h4>';
+    if(item.reviews&&item.reviews.length){
+      item.reviews.slice(0,4).forEach(review=>{
+        html+='<div class="teacher-note-review"><b>'+escapeHtml(review.reviewerName||'Reviewer')+'</b><br>'+renderDisplayStars(review.stars,false)+'<br>'+escapeHtml(review.comment||'')+'</div>';
+      });
+    }else{
+      html+='<div class="teacher-note-empty">No comments yet</div>';
+    }
+    html+='</div>';
+    html+='<div class="teacher-note-actions"><button class="btn-primary" onclick="loadTeacherSubmissionDesign('+idx+')">Open Design</button></div>';
+    html+='</div>';
+  });
+  html+='</div>';
+  setTeacherBoardBody(html);
 }
 
 function renderClassSubmissions(){
@@ -4639,6 +4825,20 @@ function loadSubmissionDesign(idx){
   studentName=item.studentName||item.design.studentName||studentName;
   localStorage.setItem('houseDesignStudentName',studentName);
   closeSubmissionMenu();
+  showOverview();
+}
+
+function loadTeacherSubmissionDesign(idx){
+  const item=teacherBoardSubmissions[idx];
+  if(!item||!item.design||!item.design.rooms){
+    alert('This submission does not contain design JSON.');
+    return;
+  }
+  savedDesigns=JSON.parse(JSON.stringify(item.design.rooms));
+  chosenStyle=item.design.style||chosenStyle||'modern';
+  studentName=item.studentName||item.design.studentName||studentName;
+  localStorage.setItem('houseDesignStudentName',studentName);
+  closeTeacherBoard();
   showOverview();
 }
 
@@ -6242,6 +6442,16 @@ function readAloud(){
   isReading=true;
   if(btn)btn.textContent='⏹ Stop';
   speechSynthesis.speak(u);
+}
+
+const teacherCodeInput=document.getElementById('teacherCodeInput');
+if(teacherCodeInput){
+  teacherCodeInput.addEventListener('keydown',function(e){
+    if(e.key==='Enter'){
+      e.preventDefault();
+      unlockTeacherBoard();
+    }
+  });
 }
 </script>
 </body>
