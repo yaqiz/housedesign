@@ -1502,16 +1502,17 @@
 </head>
 <body>
 
-<form name="house-design-submissions" method="POST" data-netlify="true" netlify netlify-honeypot="bot-field" hidden>
+<form name="house-design-submissions" method="POST" action="/" data-netlify="true" netlify-honeypot="bot-field" style="display:none">
   <input type="hidden" name="form-name" value="house-design-submissions">
   <input type="text" name="bot-field">
   <input type="text" name="student_name">
   <input type="text" name="style">
   <textarea name="design_json"></textarea>
   <input type="text" name="submitted_at">
+  <button type="submit">Submit</button>
 </form>
 
-<form name="house-design-reviews" method="POST" data-netlify="true" netlify netlify-honeypot="review-bot-field" hidden>
+<form name="house-design-reviews" method="POST" action="/" data-netlify="true" netlify-honeypot="review-bot-field" style="display:none">
   <input type="hidden" name="form-name" value="house-design-reviews">
   <input type="text" name="review-bot-field">
   <input type="text" name="design_id">
@@ -1519,6 +1520,7 @@
   <input type="number" name="stars">
   <textarea name="comment"></textarea>
   <input type="text" name="created_at">
+  <button type="submit">Submit</button>
 </form>
 
 
