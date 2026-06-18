@@ -1453,6 +1453,15 @@
   .eval-star2{font-size:18px;cursor:pointer;color:#d1d5db;transition:all .15s;padding:0 2px}
   .eval-star2:hover{color:#fbbf24;transform:scale(1.2)}
   .eval-star2.active{color:#f59e0b}
+  .student-name-panel{max-width:420px;margin:18px auto 0;background:#ffffff;border:2px solid #dbeafe;border-radius:12px;padding:14px 16px;box-shadow:0 2px 8px rgba(37,99,235,.08);text-align:left}
+  .student-name-panel label{display:block;font-size:13px;font-weight:700;color:#1e40af;margin-bottom:8px}
+  .student-name-panel input{width:100%;min-height:46px;border:1.5px solid #bfdbfe;border-radius:9px;padding:10px 12px;font-size:16px;color:#1e293b;background:#f8fbff}
+  .student-name-panel input:focus{outline:none;border-color:#2563eb;box-shadow:0 0 0 3px rgba(37,99,235,.12)}
+  .submit-design-panel{margin:18px auto 0;max-width:760px;background:#ffffff;border:2px solid #bfdbfe;border-radius:14px;padding:16px;text-align:center;box-shadow:0 2px 8px rgba(37,99,235,.08)}
+  .submit-design-panel h3{font-size:18px;color:#1e40af;margin-bottom:6px}
+  .submit-design-panel p{font-size:13px;color:#64748b;line-height:1.6;margin-bottom:12px}
+  .submit-design-panel button{padding:12px 22px;border-radius:10px;font-size:15px;font-weight:700}
+  .submit-status{margin-top:10px;font-size:13px;font-weight:700;color:#475569;min-height:20px}
 
   /* === Flex gap fallback for old Android (Chrome < 84) === */
   @supports not (gap:1em){
@@ -1475,11 +1484,25 @@
 </head>
 <body>
 
+<form name="house-design-submissions" method="POST" data-netlify="true" netlify netlify-honeypot="bot-field" hidden>
+  <input type="hidden" name="form-name" value="house-design-submissions">
+  <input type="text" name="bot-field">
+  <input type="text" name="student_name">
+  <input type="text" name="style">
+  <textarea name="design_json"></textarea>
+  <input type="text" name="submitted_at">
+</form>
+
 <div id="stage-style" class="stage active">
   <div class="style-intro">
     <h1>Design Your Dream Home</h1>
     <div class="subtitle">设计你的梦想之家</div>
     <p>Welcome! In this project, you will design rooms, learn about area and space, and practice English — all while creating your perfect home!<br>欢迎！在这个项目中，你将设计房间、学习面积和空间知识、练习英语——同时打造你的完美之家！</p>
+
+    <div class="student-name-panel">
+      <label for="studentNameInput">Who are you? / 我是谁</label>
+      <input id="studentNameInput" type="text" autocomplete="name" placeholder="Type your name / 输入你的名字">
+    </div>
   </div>
   <div class="style-grid" id="styleGrid"></div>
   <button class="start-btn" id="startBtn" onclick="goToRoom()">Next: Pick a Room → / 下一步：选择房间 →</button>
@@ -3853,6 +3876,7 @@ function rBoxG(w,h,d,r){
 
 let chosenStyle=null,chosenRoom=null,chosenSize={},chosenColor={},placedItems=[],scene=null,camera=null,renderer=null,controls=null,raycaster=null,mouse=null,canvasContainer=null,sentences=[],roomObjects=[];
 let savedDesigns={};
+let studentName='';
 
 const COLOR_TONES=[
   {id:'warm',name:'Warm 暖色',color:'#e8c8a0',wall:0xe8c8a0,floor:0xb88850,emoji:'🧡'},
@@ -3880,7 +3904,27 @@ const MASCOT_TIPS=[
   "🧮 The math panel shows how much space is left. Don't overfill! / 数学面板显示剩余空间，不要塞太满！"
 ];
 let lastTipIdx=-1;
-window.addEventListener('DOMContentLoaded',()=>{renderStyleCards();showMascotTip("Hi! I'm your home helper. Pick a style to begin! / 你好！我是你的家居小管家，选一个风格开始吧！");document.getElementById('homeBtn').onclick=goHome;document.getElementById('mascot').onclick=showRandomTip;});
+window.addEventListener('DOMContentLoaded',()=>{initStudentName();renderStyleCards();showMascotTip("Hi! I'm your home helper. Pick a style to begin! / 你好！我是你的家居小管家，选一个风格开始吧！");document.getElementById('homeBtn').onclick=goHome;document.getElementById('mascot').onclick=showRandomTip;});
+
+function initStudentName(){
+  const input=document.getElementById('studentNameInput');
+  studentName=(localStorage.getItem('houseDesignStudentName')||'').trim();
+  if(input){
+    input.value=studentName;
+    input.addEventListener('input',()=>{
+      studentName=input.value.trim();
+      localStorage.setItem('houseDesignStudentName',studentName);
+    });
+  }
+}
+
+function getStudentName(){
+  const input=document.getElementById('studentNameInput');
+  studentName=((input&&input.value)||studentName||localStorage.getItem('houseDesignStudentName')||'').trim();
+  if(studentName)localStorage.setItem('houseDesignStudentName',studentName);
+  return studentName;
+}
+
 function showRandomTip(){
   let idx;
   do{idx=Math.floor(Math.random()*MASCOT_TIPS.length);}while(idx===lastTipIdx&&MASCOT_TIPS.length>1);
@@ -3908,6 +3952,12 @@ function selectStyle(key,el){
 
 function goToRoom(){
   if(!chosenStyle)return;
+  if(!getStudentName()){
+    alert('Please enter your name first. / 请先输入你的名字。');
+    const input=document.getElementById('studentNameInput');
+    if(input)input.focus();
+    return;
+  }
   document.getElementById('stage-style').classList.remove('active');
   document.getElementById('stage-room').classList.add('active');
   document.getElementById('styleLabel').textContent='Style / 风格: '+STYLES[chosenStyle].name+' '+STYLES[chosenStyle].nameCn;
@@ -4095,11 +4145,12 @@ function drawBlueprint(){
 
 function showOverview(){
   saveCurrentDesign();
+  const currentStudent=getStudentName()||'Student';
   if(typeof speechSynthesis!=='undefined'){try{speechSynthesis.cancel();}catch(e){}}
   document.querySelectorAll('.stage').forEach(s=>s.classList.remove('active'));
   document.getElementById('stage-overview').classList.add('active');
   const s=STYLES[chosenStyle];
-  document.getElementById('overviewStyle').textContent='Style / 风格: '+s.name+' '+s.nameCn;
+  document.getElementById('overviewStyle').textContent=currentStudent+' - Style / ??: '+s.name+' '+s.nameCn;
   const wrap=document.getElementById('overviewWrap');
   const totalItems=Object.values(savedDesigns).reduce((s,a)=>Array.isArray(a)?s+a.length:s,0);
   const totalArea=Object.keys(savedDesigns).filter(k=>!k.includes('_size')).reduce((s,k)=>{
@@ -4109,9 +4160,9 @@ function showOverview(){
   const allDone=Object.keys(ROOMS).every(k=>savedDesigns[k]);
   // 3D Overview
   const designedCount=Object.keys(ROOMS).filter(k=>savedDesigns[k]).length;
-  let html='<div style="text-align:center;margin-bottom:12px"><h2 style="font-size:22px;color:#1e293b">🏠 My Dream Home / 我的梦想之家</h2><p style="color:#64748b;font-size:14px">'+s.icon+' '+s.name+' '+s.nameCn+' · '+designedCount+' rooms / 房间 · '+totalItems+' furniture / 家具 · '+totalArea+' m²</p></div>';
+  let html='<div style="text-align:center;margin-bottom:12px"><h2 style="font-size:22px;color:#1e293b">?? '+escapeHtml(currentStudent)+'\'s Dream Home / '+escapeHtml(currentStudent)+' 的梦想之家</h2><p style="color:#64748b;font-size:14px">'+s.icon+' '+s.name+' '+s.nameCn+' ? '+designedCount+' rooms / 房间 ? '+totalItems+' furniture / 家具 ? '+totalArea+' m?</p></div>';
   const ov3dH=window.innerWidth<745?'280px':window.innerWidth<1400?'360px':'420px';
-  html+=`<div id="overview3d" style="width:100%;height:${ov3dH};border-radius:16px;overflow:hidden;border:2px solid #e2e8f0;background:#f0f4f8;position:relative;touch-action:none"><div style="position:absolute;left:10px;bottom:10px;z-index:2;background:rgba(255,255,255,.92);border:1px solid #dbe3ef;border-radius:8px;padding:6px 10px;font-size:12px;color:#475569">Drag to rotate · Pinch to zoom / 拖动旋转 · 双指缩放</div></div>`;
+  html+=`<div id="overview3d" style="width:100%;height:${ov3dH};border-radius:16px;overflow:hidden;border:2px solid #e2e8f0;background:#f0f4f8;position:relative;touch-action:none"><div style="position:absolute;left:10px;bottom:10px;z-index:2;background:rgba(255,255,255,.92);border:1px solid #dbe3ef;border-radius:8px;padding:6px 10px;font-size:12px;color:#475569">Tap a room to zoom inside - tap empty space to return / \u70b9\u51fb\u623f\u95f4\u653e\u5927\u67e5\u770b - \u70b9\u51fb\u7a7a\u767d\u8fd4\u56de</div></div>`;
   // Floor tabs
   html+='<div style="display:-webkit-flex;display:-webkit-flex;display:flex;gap:10px;justify-content:center;margin:12px 0"><button class="btn-primary" style="padding:8px 20px;border-radius:8px" onclick="overviewFloor(1)">1F 一楼</button><button class="btn-primary" style="padding:8px 20px;border-radius:8px" onclick="overviewFloor(2)">2F 二楼</button><button class="btn-primary" style="padding:8px 20px;border-radius:8px" onclick="overviewFloor(0)">All / 全部</button></div>';
   // Room cards
@@ -4240,6 +4291,12 @@ function showOverview(){
   });
   html+=`</tbody></table>`;
   html+=`</div>`;
+  html+=`<div class="submit-design-panel">`;
+  html+=`<h3>Submit Design / 提交设计</h3>`;
+  html+=`<p>${escapeHtml(currentStudent)}, submit your design to the class server. Netlify will keep one record for the teacher to review. / 提交后，老师可以在 Netlify 后台看到这份设计数据。</p>`;
+  html+=`<button class="btn-primary" id="submitDesignBtn" onclick="submitDesignToServer()">Submit Design / 提交设计</button>`;
+  html+=`<div class="submit-status" id="submitDesignStatus"></div>`;
+  html+=`</div>`;
   wrap.innerHTML=html;
   // Build 3D overview (delay to ensure container is laid out)
   requestAnimationFrame(()=>requestAnimationFrame(()=>buildOverview3D()));
@@ -4253,6 +4310,68 @@ function rateStar(el,rubricIdx,starVal){
   stars.forEach((s,i)=>{
     s.style.color=(i<starVal)?'#f59e0b':'#d1d5db';
   });
+}
+
+function escapeHtml(value){
+  return String(value==null?'':value).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+}
+
+function buildDesignSubmission(){
+  saveCurrentDesign();
+  const name=getStudentName()||'Student';
+  const designedRooms=Object.keys(ROOMS).filter(k=>savedDesigns[k]&&Array.isArray(savedDesigns[k]));
+  const totalItems=Object.values(savedDesigns).reduce((sum,val)=>sum+(Array.isArray(val)?val.length:0),0);
+  return {
+    studentName:name,
+    style:chosenStyle,
+    styleName:chosenStyle&&STYLES[chosenStyle]?STYLES[chosenStyle].name+' '+STYLES[chosenStyle].nameCn:'',
+    rooms:savedDesigns,
+    designedRooms:designedRooms,
+    totalItems:totalItems,
+    submittedAt:new Date().toISOString(),
+    pageUrl:location.href
+  };
+}
+
+function setSubmitStatus(text,color){
+  const el=document.getElementById('submitDesignStatus');
+  if(el){el.textContent=text;el.style.color=color||'#475569';}
+}
+
+async function submitDesignToServer(){
+  const btn=document.getElementById('submitDesignBtn');
+  const name=getStudentName();
+  if(!name){
+    setSubmitStatus('Please enter your name on the first page. / 请先在首页输入名字。','#ef4444');
+    return;
+  }
+  if(location.protocol==='file:'){
+    setSubmitStatus('Open the Netlify website to submit to the server. file:// cannot submit. / 请用 Netlify 网址打开，本地文件不能提交到服务器。','#ef4444');
+    return;
+  }
+  const payload=buildDesignSubmission();
+  const body=new URLSearchParams();
+  body.append('form-name','house-design-submissions');
+  body.append('student_name',payload.studentName);
+  body.append('style',payload.styleName||payload.style||'');
+  body.append('design_json',JSON.stringify(payload));
+  body.append('submitted_at',payload.submittedAt);
+  try{
+    if(btn){btn.disabled=true;btn.textContent='Submitting... / 提交中...';}
+    setSubmitStatus('Submitting to Netlify... / 正在提交到 Netlify...','#2563eb');
+    const res=await fetch('/',{
+      method:'POST',
+      headers:{'Content-Type':'application/x-www-form-urlencoded'},
+      body:body.toString()
+    });
+    if(!res.ok)throw new Error('HTTP '+res.status);
+    localStorage.setItem('lastHouseDesignSubmission',JSON.stringify(payload));
+    setSubmitStatus('Submitted successfully. / 提交成功。','#16a34a');
+    if(btn){btn.textContent='Submitted / 已提交';}
+  }catch(err){
+    setSubmitStatus('Submit failed: '+err.message+' / 提交失败，请检查 Netlify Forms。','#ef4444');
+    if(btn){btn.disabled=false;btn.textContent='Submit Design / 提交设计';}
+  }
 }
 
 function buildOverview3D(){
