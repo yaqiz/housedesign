@@ -4338,40 +4338,68 @@ function setSubmitStatus(text,color){
   if(el){el.textContent=text;el.style.color=color||'#475569';}
 }
 
-async function submitDesignToServer(){
+function submitDesignToServer(){
   const btn=document.getElementById('submitDesignBtn');
   const name=getStudentName();
   if(!name){
-    setSubmitStatus('Please enter your name on the first page. / 请先在首页输入名字。','#ef4444');
+    setSubmitStatus('Please enter your name on the first page.','#ef4444');
     return;
   }
   if(location.protocol==='file:'){
-    setSubmitStatus('Open the Netlify website to submit to the server. file:// cannot submit. / 请用 Netlify 网址打开，本地文件不能提交到服务器。','#ef4444');
+    setSubmitStatus('Open the Netlify website to submit. Local file:// cannot submit to the server.','#ef4444');
     return;
   }
   const payload=buildDesignSubmission();
-  const body=new URLSearchParams();
-  body.append('form-name','house-design-submissions');
-  body.append('student_name',payload.studentName);
-  body.append('style',payload.styleName||payload.style||'');
-  body.append('design_json',JSON.stringify(payload));
-  body.append('submitted_at',payload.submittedAt);
-  try{
-    if(btn){btn.disabled=true;btn.textContent='Submitting... / 提交中...';}
-    setSubmitStatus('Submitting to Netlify... / 正在提交到 Netlify...','#2563eb');
-    const res=await fetch('/',{
-      method:'POST',
-      headers:{'Content-Type':'application/x-www-form-urlencoded'},
-      body:body.toString()
-    });
-    if(!res.ok)throw new Error('HTTP '+res.status);
+  const frameName='netlifySubmitFrame_'+Date.now();
+  const frame=document.createElement('iframe');
+  frame.name=frameName;
+  frame.style.display='none';
+  let submitted=false;
+  let finished=false;
+  const done=(ok,msg,color)=>{
+    if(finished)return;
+    finished=true;
+    clearTimeout(timer);
+    setSubmitStatus(msg,color);
+    if(btn){
+      btn.disabled=ok;
+      btn.textContent=ok?'Submitted':'Submit Design';
+    }
+    setTimeout(()=>{try{frame.remove();}catch(e){}},1200);
+  };
+  const timer=setTimeout(()=>{
+    done(false,'Still waiting. Check Netlify Forms. If no record appears, try again.','#ef4444');
+  },20000);
+  frame.onload=()=>{
+    if(!submitted)return;
     localStorage.setItem('lastHouseDesignSubmission',JSON.stringify(payload));
-    setSubmitStatus('Submitted successfully. / 提交成功。','#16a34a');
-    if(btn){btn.textContent='Submitted / 已提交';}
-  }catch(err){
-    setSubmitStatus('Submit failed: '+err.message+' / 提交失败，请检查 Netlify Forms。','#ef4444');
-    if(btn){btn.disabled=false;btn.textContent='Submit Design / 提交设计';}
-  }
+    done(true,'Submitted successfully.','#16a34a');
+  };
+  document.body.appendChild(frame);
+  const form=document.createElement('form');
+  form.method='POST';
+  form.action='/';
+  form.target=frameName;
+  form.style.display='none';
+  const fields={
+    'form-name':'house-design-submissions',
+    'student_name':payload.studentName,
+    'style':payload.styleName||payload.style||'',
+    'design_json':JSON.stringify(payload),
+    'submitted_at':payload.submittedAt
+  };
+  Object.keys(fields).forEach(key=>{
+    const input=document.createElement(key==='design_json'?'textarea':'input');
+    input.name=key;
+    input.value=fields[key];
+    form.appendChild(input);
+  });
+  document.body.appendChild(form);
+  if(btn){btn.disabled=true;btn.textContent='Submitting...';}
+  setSubmitStatus('Submitting to Netlify...','#2563eb');
+  submitted=true;
+  form.submit();
+  setTimeout(()=>{try{form.remove();}catch(e){}},1000);
 }
 
 function buildOverview3D(){
