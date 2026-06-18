@@ -4378,6 +4378,62 @@ function setSubmitStatus(text,color){
   if(el){el.textContent=text;el.style.color=color||'#475569';}
 }
 
+function getPendingSubmissions(){
+  try{
+    const raw=localStorage.getItem('pendingHouseDesignSubmissions');
+    const items=raw?JSON.parse(raw):[];
+    return Array.isArray(items)?items:[];
+  }catch(e){
+    return [];
+  }
+}
+
+function savePendingSubmissions(items){
+  try{
+    localStorage.setItem('pendingHouseDesignSubmissions',JSON.stringify(items||[]));
+  }catch(e){}
+}
+
+function addPendingSubmission(payload){
+  const items=getPendingSubmissions();
+  items.unshift({
+    id:'local-'+Date.now(),
+    studentName:payload.studentName||'Student',
+    style:payload.style||'',
+    styleName:payload.styleName||'',
+    submittedAt:payload.submittedAt||new Date().toISOString(),
+    design:payload,
+    reviewCount:0,
+    averageStars:0,
+    reviews:[],
+    pending:true
+  });
+  savePendingSubmissions(items.slice(0,20));
+}
+
+function sameSubmission(a,b){
+  if(!a||!b)return false;
+  const nameA=String(a.studentName||'').trim().toLowerCase();
+  const nameB=String(b.studentName||'').trim().toLowerCase();
+  const timeA=String(a.submittedAt||'').trim();
+  const timeB=String(b.submittedAt||'').trim();
+  return !!nameA&&nameA===nameB&&!!timeA&&timeA===timeB;
+}
+
+function mergeSubmissions(remoteItems){
+  const remote=Array.isArray(remoteItems)?remoteItems:[];
+  const pending=getPendingSubmissions();
+  const merged=remote.slice();
+  pending.forEach(item=>{
+    const exists=remote.some(remoteItem=>sameSubmission(remoteItem,item));
+    if(!exists)merged.push(item);
+  });
+  merged.sort((a,b)=>String(b.submittedAt||'').localeCompare(String(a.submittedAt||'')));
+  const stillPending=pending.filter(item=>!remote.some(remoteItem=>sameSubmission(remoteItem,item)));
+  savePendingSubmissions(stillPending);
+  return merged;
+}
+
 function submitDesignToServer(){
   const btn=document.getElementById('submitDesignBtn');
   const name=getStudentName();
@@ -4413,7 +4469,9 @@ function submitDesignToServer(){
   frame.onload=()=>{
     if(!submitted)return;
     localStorage.setItem('lastHouseDesignSubmission',JSON.stringify(payload));
+    addPendingSubmission(payload);
     done(true,'Submitted successfully.','#16a34a');
+    loadClassSubmissions();
   };
   document.body.appendChild(frame);
   const form=document.createElement('form');
@@ -4482,7 +4540,7 @@ function loadClassSubmissions(){
       setSubmissionBody('<div class="submission-card"><h3>Server error</h3><div class="submission-meta">'+escapeHtml(data.error)+'</div></div>');
       return;
     }
-    classSubmissions=data.designs||[];
+    classSubmissions=mergeSubmissions(data.designs||[]);
     renderClassSubmissions();
   };
   xhr.onerror=function(){
