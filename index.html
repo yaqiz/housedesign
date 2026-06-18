@@ -1477,6 +1477,10 @@
   .review-box{border-top:1px solid #e2e8f0;margin-top:10px;padding-top:10px}
   .review-box input,.review-box textarea,.review-box select{width:100%;border:1.5px solid #cbd5e1;border-radius:8px;padding:8px 10px;font-size:13px;margin:5px 0;background:#fff}
   .review-box textarea{min-height:64px;resize:vertical}
+  .review-stars{display:flex;align-items:center;gap:4px;margin:6px 0 8px}
+  .review-stars button{background:none;border:none;padding:2px;font-size:24px;line-height:1;color:#cbd5e1;cursor:pointer;min-width:28px}
+  .review-stars button.active{color:#f59e0b}
+  .review-stars-label{font-size:12px;color:#64748b;margin-left:6px}
   .review-list{margin-top:8px;font-size:12px;color:#475569}
   .review-item{border-top:1px solid #e2e8f0;padding-top:6px;margin-top:6px;line-height:1.5}
   @media (max-width:744px){.submission-toggle{top:8px;right:8px;padding:8px 10px;font-size:12px}.submission-drawer{width:100%;max-width:100vw}}
@@ -4354,6 +4358,18 @@ function rateStar(el,rubricIdx,starVal){
   });
 }
 
+function setReviewStars(idx,starVal){
+  const value=Math.max(1,Math.min(5,Number(starVal)||5));
+  const input=document.getElementById('reviewStars'+idx);
+  if(input)input.value=String(value);
+  const stars=document.querySelectorAll('#reviewStarsWrap'+idx+' button[data-star]');
+  for(let i=0;i<stars.length;i++){
+    stars[i].classList.toggle('active',i<value);
+  }
+  const label=document.getElementById('reviewStarsLabel'+idx);
+  if(label)label.textContent=value+' / 5';
+}
+
 function escapeHtml(value){
   return String(value==null?'':value).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 }
@@ -4565,7 +4581,15 @@ function renderClassSubmissions(){
     html+='<div class="submission-actions"><button class="btn-primary" onclick="loadSubmissionDesign('+idx+')">View Design / 查看</button><button class="btn-secondary" onclick="toggleReviewBox('+idx+')">Review / 评价</button></div>';
     html+='<div class="review-box" id="reviewBox'+idx+'" style="display:none">';
     html+='<input id="reviewerName'+idx+'" placeholder="Your name / 你的名字">';
-    html+='<select id="reviewStars'+idx+'"><option value="5">5 stars</option><option value="4">4 stars</option><option value="3">3 stars</option><option value="2">2 stars</option><option value="1">1 star</option></select>';
+    html+='<input type="hidden" id="reviewStars'+idx+'" value="5">';
+    html+='<div class="review-stars" id="reviewStarsWrap'+idx+'">';
+    html+='<button type="button" class="active" data-star="1" onclick="setReviewStars('+idx+',1)">★</button>';
+    html+='<button type="button" class="active" data-star="2" onclick="setReviewStars('+idx+',2)">★</button>';
+    html+='<button type="button" class="active" data-star="3" onclick="setReviewStars('+idx+',3)">★</button>';
+    html+='<button type="button" class="active" data-star="4" onclick="setReviewStars('+idx+',4)">★</button>';
+    html+='<button type="button" class="active" data-star="5" onclick="setReviewStars('+idx+',5)">★</button>';
+    html+='<span class="review-stars-label" id="reviewStarsLabel'+idx+'">5 / 5</span>';
+    html+='</div>';
     html+='<textarea id="reviewComment'+idx+'" placeholder="Comment / 评价"></textarea>';
     html+='<button class="btn-primary" id="reviewBtn'+idx+'" onclick="submitReview('+idx+')">Submit Review / 提交评价</button>';
     html+='<div class="submit-status" id="reviewStatus'+idx+'"></div>';
