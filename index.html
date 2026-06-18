@@ -4111,7 +4111,8 @@ function showOverview(){
   const designedCount=Object.keys(ROOMS).filter(k=>savedDesigns[k]).length;
   let html='<div style="text-align:center;margin-bottom:12px"><h2 style="font-size:22px;color:#1e293b">🏠 My Dream Home / 我的梦想之家</h2><p style="color:#64748b;font-size:14px">'+s.icon+' '+s.name+' '+s.nameCn+' · '+designedCount+' rooms / 房间 · '+totalItems+' furniture / 家具 · '+totalArea+' m²</p></div>';
   const ov3dH=window.innerWidth<745?'280px':window.innerWidth<1400?'360px':'420px';
-  html+=`<div id="overview3d" style="width:100%;height:${ov3dH};border-radius:16px;overflow:hidden;border:2px solid #e2e8f0;background:#f0f4f8"></div>`;
+  html+=`<div id="overview3d" style="width:100%;height:${ov3dH};border-radius:16px;overflow:hidden;border:2px solid #e2e8f0;background:#f0f4f8;position:relative;touch-action:none"><div style="position:absolute;left:10px;bottom:10px;z-index:2;background:rgba(255,255,255,.92);border:1px solid #dbe3ef;border-radius:8px;padding:6px 10px;font-size:12px;color:#475569">Drag to rotate · Pinch to zoom / 拖动旋转 · 双指缩放</div></div>`;
+  html+='<div style="display:-webkit-flex;display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:10px 0"><button class="btn-secondary" style="padding:9px 14px;border-radius:8px;min-height:42px" onclick="overviewSpin(-1)">◀ Rotate / 左转</button><button class="btn-secondary" style="padding:9px 14px;border-radius:8px;min-height:42px" onclick="overviewSpin(1)">Rotate / 右转 ▶</button><button class="btn-secondary" style="padding:9px 14px;border-radius:8px;min-height:42px" onclick="overviewZoom(0.86)">＋ Zoom / 放大</button><button class="btn-secondary" style="padding:9px 14px;border-radius:8px;min-height:42px" onclick="overviewZoom(1.16)">－ Zoom / 缩小</button><button class="btn-primary" style="padding:9px 14px;border-radius:8px;min-height:42px" onclick="overviewResetView()">Reset / 重置</button></div>';
   // Floor tabs
   html+='<div style="display:-webkit-flex;display:-webkit-flex;display:flex;gap:10px;justify-content:center;margin:12px 0"><button class="btn-primary" style="padding:8px 20px;border-radius:8px" onclick="overviewFloor(1)">1F 一楼</button><button class="btn-primary" style="padding:8px 20px;border-radius:8px" onclick="overviewFloor(2)">2F 二楼</button><button class="btn-primary" style="padding:8px 20px;border-radius:8px" onclick="overviewFloor(0)">All / 全部</button></div>';
   // Room cards
@@ -4272,9 +4273,14 @@ function buildOverview3D(){
   overviewRenderer.setSize(w,h);overviewRenderer.setPixelRatio(Math.min(window.devicePixelRatio,isMob?1:2));
   overviewRenderer.shadowMap.enabled=!isMob;
   container.appendChild(overviewRenderer.domElement);
+  overviewRenderer.domElement.style.touchAction='none';
+  overviewRenderer.domElement.style.cursor='grab';
   overviewControls=new THREE.OrbitControls(overviewCamera,overviewRenderer.domElement);
   overviewControls.target.set(0,2,0);overviewControls.enableDamping=true;overviewControls.dampingFactor=0.08;
   overviewControls.maxPolarAngle=Math.PI*0.45;overviewControls.minDistance=5;overviewControls.maxDistance=40;
+  overviewControls.enablePan=true;
+  overviewControls.rotateSpeed=0.7;
+  overviewControls.zoomSpeed=1.1;
   // Lights
   overviewScene.add(new THREE.AmbientLight(0xffffff,0.8));
   const sun=new THREE.DirectionalLight(0xfff4e0,1.2);sun.position.set(8,15,8);sun.castShadow=true;
@@ -4461,6 +4467,36 @@ function overviewFloor(floor){
     overviewCamera.position.set(12,14,12);
     overviewControls.target.set(0,2,0);
   }
+  overviewControls.update();
+}
+
+function overviewSpin(dir){
+  if(!overviewCamera||!overviewControls)return;
+  const target=overviewControls.target;
+  const offset=overviewCamera.position.clone().sub(target);
+  offset.applyAxisAngle(new THREE.Vector3(0,1,0),dir*Math.PI/10);
+  overviewCamera.position.copy(target).add(offset);
+  overviewCamera.lookAt(target);
+  overviewControls.update();
+}
+
+function overviewZoom(factor){
+  if(!overviewCamera||!overviewControls)return;
+  const target=overviewControls.target;
+  const offset=overviewCamera.position.clone().sub(target);
+  const next=offset.length()*factor;
+  const clamped=Math.max(overviewControls.minDistance,Math.min(overviewControls.maxDistance,next));
+  offset.setLength(clamped);
+  overviewCamera.position.copy(target).add(offset);
+  overviewCamera.lookAt(target);
+  overviewControls.update();
+}
+
+function overviewResetView(){
+  if(!overviewCamera||!overviewControls)return;
+  overviewCamera.position.set(12,14,12);
+  overviewControls.target.set(0,2,0);
+  overviewCamera.lookAt(overviewControls.target);
   overviewControls.update();
 }
 
