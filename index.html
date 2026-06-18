@@ -1481,6 +1481,10 @@
   .review-stars button{background:none;border:none;padding:2px;font-size:24px;line-height:1;color:#cbd5e1;cursor:pointer;min-width:28px}
   .review-stars button.active{color:#f59e0b}
   .review-stars-label{font-size:12px;color:#64748b;margin-left:6px}
+  .display-stars{display:inline-flex;align-items:center;gap:2px;vertical-align:middle}
+  .display-stars .star{font-size:15px;line-height:1;color:#cbd5e1}
+  .display-stars .star.active{color:#f59e0b}
+  .display-stars .score{font-size:12px;color:#64748b;margin-left:4px}
   .review-list{margin-top:8px;font-size:12px;color:#475569}
   .review-item{border-top:1px solid #e2e8f0;padding-top:6px;margin-top:6px;line-height:1.5}
   @media (max-width:744px){.submission-toggle{top:8px;right:8px;padding:8px 10px;font-size:12px}.submission-drawer{width:100%;max-width:100vw}}
@@ -4370,6 +4374,20 @@ function setReviewStars(idx,starVal){
   if(label)label.textContent=value+' / 5';
 }
 
+function renderDisplayStars(value,showScore){
+  const numeric=Math.max(0,Math.min(5,Number(value)||0));
+  const rounded=Math.round(numeric);
+  let html='<span class="display-stars">';
+  for(let i=1;i<=5;i++){
+    html+='<span class="star'+(i<=rounded?' active':'')+'">★</span>';
+  }
+  if(showScore){
+    html+='<span class="score">'+numeric.toFixed(1)+'/5</span>';
+  }
+  html+='</span>';
+  return html;
+}
+
 function escapeHtml(value){
   return String(value==null?'':value).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 }
@@ -4574,7 +4592,7 @@ function renderClassSubmissions(){
   }
   let html='<div class="submission-meta">'+classSubmissions.length+' submissions</div>';
   classSubmissions.forEach((item,idx)=>{
-    const stars=item.averageStars?('★ '+item.averageStars.toFixed(1)):'No ratings yet';
+    const stars=item.averageStars?renderDisplayStars(item.averageStars,true):'No ratings yet';
     html+='<div class="submission-card">';
     html+='<h3>'+escapeHtml(item.studentName||'Student')+'</h3>';
     html+='<div class="submission-meta">'+escapeHtml(item.styleName||item.style||'')+'<br>'+escapeHtml(item.submittedAt||'')+'<br>'+stars+' · '+(item.reviewCount||0)+' reviews</div>';
@@ -4596,7 +4614,7 @@ function renderClassSubmissions(){
     if(item.reviews&&item.reviews.length){
       html+='<div class="review-list">';
       item.reviews.slice(0,5).forEach(review=>{
-        html+='<div class="review-item"><b>'+escapeHtml(review.reviewerName)+'</b> · '+('★'.repeat(Math.max(0,Math.min(5,review.stars||0))))+'<br>'+escapeHtml(review.comment||'')+'</div>';
+        html+='<div class="review-item"><b>'+escapeHtml(review.reviewerName)+'</b><br>'+renderDisplayStars(review.stars,false)+'<br>'+escapeHtml(review.comment||'')+'</div>';
       });
       html+='</div>';
     }
