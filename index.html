@@ -4112,7 +4112,6 @@ function showOverview(){
   let html='<div style="text-align:center;margin-bottom:12px"><h2 style="font-size:22px;color:#1e293b">🏠 My Dream Home / 我的梦想之家</h2><p style="color:#64748b;font-size:14px">'+s.icon+' '+s.name+' '+s.nameCn+' · '+designedCount+' rooms / 房间 · '+totalItems+' furniture / 家具 · '+totalArea+' m²</p></div>';
   const ov3dH=window.innerWidth<745?'280px':window.innerWidth<1400?'360px':'420px';
   html+=`<div id="overview3d" style="width:100%;height:${ov3dH};border-radius:16px;overflow:hidden;border:2px solid #e2e8f0;background:#f0f4f8;position:relative;touch-action:none"><div style="position:absolute;left:10px;bottom:10px;z-index:2;background:rgba(255,255,255,.92);border:1px solid #dbe3ef;border-radius:8px;padding:6px 10px;font-size:12px;color:#475569">Drag to rotate · Pinch to zoom / 拖动旋转 · 双指缩放</div></div>`;
-  html+='<div style="display:-webkit-flex;display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:10px 0"><button class="btn-secondary" style="padding:9px 14px;border-radius:8px;min-height:42px" onclick="overviewSpin(-1)">◀ Rotate / 左转</button><button class="btn-secondary" style="padding:9px 14px;border-radius:8px;min-height:42px" onclick="overviewSpin(1)">Rotate / 右转 ▶</button><button class="btn-secondary" style="padding:9px 14px;border-radius:8px;min-height:42px" onclick="overviewZoom(0.86)">＋ Zoom / 放大</button><button class="btn-secondary" style="padding:9px 14px;border-radius:8px;min-height:42px" onclick="overviewZoom(1.16)">－ Zoom / 缩小</button><button class="btn-primary" style="padding:9px 14px;border-radius:8px;min-height:42px" onclick="overviewResetView()">Reset / 重置</button></div>';
   // Floor tabs
   html+='<div style="display:-webkit-flex;display:-webkit-flex;display:flex;gap:10px;justify-content:center;margin:12px 0"><button class="btn-primary" style="padding:8px 20px;border-radius:8px" onclick="overviewFloor(1)">1F 一楼</button><button class="btn-primary" style="padding:8px 20px;border-radius:8px" onclick="overviewFloor(2)">2F 二楼</button><button class="btn-primary" style="padding:8px 20px;border-radius:8px" onclick="overviewFloor(0)">All / 全部</button></div>';
   // Room cards
@@ -4247,6 +4246,7 @@ function showOverview(){
 }
 
 let overviewRenderer=null,overviewScene=null,overviewCamera=null,overviewControls=null;
+let overviewRaycaster=null,overviewPointer=null,overviewRooms=[],overviewFocusedRoom=null,overviewTapStart=null;
 function rateStar(el,rubricIdx,starVal){
   const row=el.parentElement;
   const stars=row.querySelectorAll('span[data-rubric="'+rubricIdx+'"]');
@@ -4281,6 +4281,11 @@ function buildOverview3D(){
   overviewControls.enablePan=true;
   overviewControls.rotateSpeed=0.7;
   overviewControls.zoomSpeed=1.1;
+  overviewRaycaster=new THREE.Raycaster();
+  overviewPointer=new THREE.Vector2();
+  overviewRooms=[];
+  overviewFocusedRoom=null;
+  initOverviewRoomPicking(container);
   // Lights
   overviewScene.add(new THREE.AmbientLight(0xffffff,0.8));
   const sun=new THREE.DirectionalLight(0xfff4e0,1.2);sun.position.set(8,15,8);sun.castShadow=true;
@@ -4319,7 +4324,7 @@ function buildOverview3D(){
     floor2Rooms.forEach(([key,r])=>{
       const sz=savedDesigns[key+'_size']||chosenSize[key]||'medium';
       const dims=(r.sizes[sz]&&r.sizes[sz].dims)||r.sizes.medium.dims;
-      const group=buildOverviewRoom(key,r,dims,s);
+    const group=buildOverviewRoom(key,r,dims,s);
       group.position.x=fx2;
       overviewFloor2Group.add(group);
       fx2+=dims[0]+0.2;
@@ -4338,6 +4343,85 @@ function buildOverview3D(){
   animOv();
 }
 
+function initOverviewRoomPicking(container){
+  const canvas=overviewRenderer.domElement;
+  const rememberStart=(x,y)=>{overviewTapStart={x:x,y:y};};
+  const finishTap=(x,y)=>{
+    if(!overviewTapStart)return;
+    const dx=x-overviewTapStart.x,dy=y-overviewTapStart.y;
+    overviewTapStart=null;
+    if(Math.sqrt(dx*dx+dy*dy)>8)return;
+    focusOverviewRoomAt(x,y);
+  };
+  canvas.addEventListener('mousedown',e=>rememberStart(e.clientX,e.clientY));
+  canvas.addEventListener('mouseup',e=>finishTap(e.clientX,e.clientY));
+  canvas.addEventListener('touchstart',e=>{
+    if(e.touches.length!==1)return;
+    const t=e.touches[0];rememberStart(t.clientX,t.clientY);
+  },{passive:true});
+  canvas.addEventListener('touchend',e=>{
+    if(e.changedTouches.length!==1)return;
+    const t=e.changedTouches[0];finishTap(t.clientX,t.clientY);
+  },{passive:true});
+}
+
+function focusOverviewRoomAt(clientX,clientY){
+  if(!overviewRaycaster||!overviewCamera||!overviewRenderer)return;
+  const rect=overviewRenderer.domElement.getBoundingClientRect();
+  overviewPointer.x=((clientX-rect.left)/rect.width)*2-1;
+  overviewPointer.y=-((clientY-rect.top)/rect.height)*2+1;
+  overviewRaycaster.setFromCamera(overviewPointer,overviewCamera);
+  const pickables=[];
+  overviewRooms.forEach(room=>{
+    room.traverse(o=>{if(o.isMesh||o.isSprite)pickables.push(o);});
+  });
+  const hits=overviewRaycaster.intersectObjects(pickables,false);
+  if(!hits.length){overviewShowAllRooms();return;}
+  let obj=hits[0].object;
+  let room=obj.userData.overviewRoom;
+  while(!room&&obj.parent){
+    obj=obj.parent;
+    room=obj.userData.overviewRoom;
+  }
+  if(room)focusOverviewRoom(room);
+}
+
+function focusOverviewRoom(room){
+  if(!room||!overviewCamera||!overviewControls)return;
+  overviewFocusedRoom=room;
+  overviewRooms.forEach(r=>{
+    r.scale.setScalar(r===room?1.35:0.92);
+    r.traverse(o=>{
+      if(o.material&&'opacity' in o.material){
+        o.material.transparent=true;
+        o.material.opacity=r===room?1:0.28;
+      }
+    });
+  });
+  const box=new THREE.Box3().setFromObject(room);
+  const center=box.getCenter(new THREE.Vector3());
+  const size=box.getSize(new THREE.Vector3());
+  const target=center.clone();target.y=Math.max(0.8,center.y+size.y*0.15);
+  const distance=Math.max(size.x,size.z)*1.15+2.2;
+  overviewControls.target.copy(target);
+  overviewCamera.position.set(target.x+distance*0.65,target.y+Math.max(2.2,size.y*0.8),target.z+distance);
+  overviewCamera.lookAt(target);
+  overviewControls.update();
+}
+
+function overviewShowAllRooms(){
+  overviewFocusedRoom=null;
+  overviewRooms.forEach(r=>{
+    r.scale.setScalar(1);
+    r.traverse(o=>{
+      if(o.material&&'opacity' in o.material){
+        o.material.opacity=1;
+      }
+    });
+  });
+  if(overviewCamera&&overviewControls)overviewResetView();
+}
+
 function addFloorLabel(scene,x,y,z,text){
   const cv=document.createElement('canvas');cv.width=128;cv.height=64;
   const ctx=cv.getContext('2d');
@@ -4353,6 +4437,9 @@ function addFloorLabel(scene,x,y,z,text){
 function buildOverviewRoom(key,r,dims,s){
   const [W,D,H]=dims;
   const group=new THREE.Group();
+  group.userData.overviewRoom=group;
+  group.userData.roomKey=key;
+  group.userData.roomName=r.name+' '+r.nameCn;
   const d=savedDesigns[key];
   // Floor - use chosen color tone if available
   const colorId=savedDesigns[key+'_color'];
@@ -4447,6 +4534,11 @@ function buildOverviewRoom(key,r,dims,s){
       }
     });
   }
+  group.traverse(o=>{
+    o.userData.overviewRoom=group;
+    o.userData.roomKey=key;
+  });
+  overviewRooms.push(group);
   return group;
 }
 
