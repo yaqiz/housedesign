@@ -40,12 +40,16 @@ exports.handler = async function () {
     const forms = await netlifyApi(`/sites/${siteId}/forms`, token);
     const designForm = forms.find((form) => form.name === 'house-design-submissions');
     const reviewForm = forms.find((form) => form.name === 'house-design-reviews');
+    const gameForm = forms.find((form) => form.name === 'house-design-game-results');
 
     const designSubmissions = designForm
       ? await netlifyApi(`/forms/${designForm.id}/submissions`, token)
       : [];
     const reviewSubmissions = reviewForm
       ? await netlifyApi(`/forms/${reviewForm.id}/submissions`, token)
+      : [];
+    const gameSubmissions = gameForm
+      ? await netlifyApi(`/forms/${gameForm.id}/submissions`, token)
       : [];
 
     const reviews = reviewSubmissions.map((submission) => {
@@ -67,10 +71,30 @@ exports.handler = async function () {
       return acc;
     }, {});
 
+    const latestGameByStudent = gameSubmissions.reduce((acc, submission) => {
+      const data = submission.data || {};
+      const name = String(data.student_name || '').trim().toLowerCase();
+      if (!name) return acc;
+      const nextItem = {
+        id: submission.id,
+        studentName: data.student_name || 'Student',
+        score: Number(data.score || 0),
+        maxScore: Number(data.max_score || 0),
+        percent: Number(data.percent || 0),
+        completedAt: data.completed_at || submission.created_at,
+        result: parseJsonField(data.result_json) || null
+      };
+      if (!acc[name] || String(nextItem.completedAt).localeCompare(String(acc[name].completedAt)) > 0) {
+        acc[name] = nextItem;
+      }
+      return acc;
+    }, {});
+
     const designs = designSubmissions.map((submission) => {
       const data = submission.data || {};
       const design = parseJsonField(data.design_json) || {};
       const designReviews = reviewsByDesign[submission.id] || [];
+      const gameResult = latestGameByStudent[String(data.student_name || design.studentName || '').trim().toLowerCase()] || null;
       const averageStars = designReviews.length
         ? designReviews.reduce((sum, review) => sum + (review.stars || 0), 0) / designReviews.length
         : 0;
@@ -81,6 +105,7 @@ exports.handler = async function () {
         styleName: data.style || design.styleName || '',
         submittedAt: data.submitted_at || design.submittedAt || submission.created_at,
         design,
+        gameResult,
         reviewCount: designReviews.length,
         averageStars,
         reviews: designReviews

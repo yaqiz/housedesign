@@ -87,6 +87,12 @@
             color: #3d2b1a;
             margin-bottom: 20px;
         }
+        .question-prompt .en {
+            font-size: 1rem;
+            color: #6b5a3e;
+            display: block;
+            font-weight: normal;
+        }
         /* 第一关：消消乐网格 - 图标与单词配对 */
         .match-grid {
             display: grid;
@@ -176,7 +182,7 @@
             transition: 0.05s linear;
         }
         .audio-btn:active { transform: translateY(2px); box-shadow: 0 1px 0 #b06d2e; }
-        /* 第三关：口语输出 */
+        /* 第三关：口语输出 - 具体房间图片 */
         .speech-card {
             background: #fff5e6;
             border-radius: 50px;
@@ -185,12 +191,17 @@
             max-width: 450px;
             margin: 0 auto;
         }
-        .speech-card .room-emoji {
-            font-size: 5rem;
+        .speech-card .room-image {
+            font-size: 6rem;
             background: #ffe1b9;
             display: inline-block;
-            padding: 10px 30px;
+            padding: 20px 40px;
             border-radius: 60px;
+            line-height: 1.4;
+        }
+        .speech-card .room-image .sub-emoji {
+            font-size: 2.5rem;
+            display: block;
         }
         .speech-frame {
             background: #e9dccb;
@@ -221,12 +232,44 @@
             transition: 0.05s linear;
         }
         .speech-btn:active { transform: translateY(2px); box-shadow: 0 1px 0 #1f5a33; }
+        .speech-status {
+            margin-top: 12px;
+            background: #fff7ed;
+            border: 2px solid #fed7aa;
+            border-radius: 24px;
+            padding: 10px 14px;
+            font-size: 1rem;
+            color: #7c4a16;
+            text-align: center;
+        }
+        .speech-transcript {
+            margin-top: 12px;
+            background: #f8fafc;
+            border: 2px dashed #cbd5e1;
+            border-radius: 24px;
+            padding: 12px 14px;
+            font-size: 1rem;
+            color: #334155;
+            line-height: 1.6;
+            min-height: 56px;
+            text-align: left;
+        }
         .feedback-msg {
             margin-top: 20px;
             font-size: 1.2rem;
             font-weight: bold;
             min-height: 2.5rem;
             color: #3d5e3d;
+        }
+        .feedback-msg .en {
+            font-size: 0.9rem;
+            font-weight: normal;
+            color: #6b5a3e;
+            display: block;
+        }
+        .feedback-msg.encourage {
+            color: #c47a1a;
+            font-size: 1.3rem;
         }
         .next-btn {
             background: #4c9f70;
@@ -269,10 +312,20 @@
     </style>
 </head>
 <body>
+<form name="house-design-game-results" method="POST" action="/" data-netlify="true" style="display:none">
+    <input type="hidden" name="form-name" value="house-design-game-results">
+    <input type="text" name="student_name">
+    <input type="text" name="score">
+    <input type="text" name="max_score">
+    <input type="text" name="percent">
+    <textarea name="result_json"></textarea>
+    <input type="text" name="completed_at">
+    <button type="submit">Submit</button>
+</form>
 <div class="game-container" id="app">
     <div class="header">
-        <span>🏠 梦想之家 · 闯关</span>
-        <span class="level-badge" id="levelDisplay">第 1 / 3 关</span>
+        <span>🏠 梦想之家 · Dream Home</span>
+        <span class="level-badge" id="levelDisplay">第 1 / 3 关 · Level 1/3</span>
         <span class="score-badge">⭐ <span id="scoreDisplay">0</span></span>
     </div>
     <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
@@ -286,9 +339,9 @@
     // ================= 三关题库 =================
     // 第一关：图标与单词匹配消消乐 (配对图标 ↔ 单词)
     // 第二关：听音选择 (听句子，选对应的房间/家具)
-    // 第三关：口语输出 (给出图片和语言框架，学生自己介绍)
+    // 第三关：口语输出 (给出具体房间图片和语言框架，学生自己介绍)
 
-    // ---------- 第一关数据：8组 图标 ↔ 单词 配对 ----------
+    // ---------- 第一关数据：8组 图标 ↔ 单词 配对 (更清晰) ----------
     const PAIRS = [
         { id: 'sofa', emoji: '🛋️', word: 'sofa' },
         { id: 'tv', emoji: '📺', word: 'tv' },
@@ -304,6 +357,7 @@
     const LISTEN_LEVELS = [
         {
             prompt: '🔊 听句子，选择对应的房间',
+            promptEn: 'Listen and choose the correct room',
             audioText: 'This is my living room. It is warm and cozy.',
             options: [
                 { emoji: '🛋️', label: 'living room', correct: true },
@@ -313,6 +367,7 @@
         },
         {
             prompt: '🔊 听句子，选择对应的房间',
+            promptEn: 'Listen and choose the correct room',
             audioText: 'I have a soft bed and a lamp in my bedroom.',
             options: [
                 { emoji: '🛏️', label: 'bedroom', correct: true },
@@ -322,6 +377,7 @@
         },
         {
             prompt: '🔊 听句子，选择对应的家具',
+            promptEn: 'Listen and choose the correct furniture',
             audioText: 'I cook food with this. It is in the kitchen.',
             options: [
                 { emoji: '🍳', label: 'stove', correct: true },
@@ -331,6 +387,7 @@
         },
         {
             prompt: '🔊 听句子，选择对应的房间',
+            promptEn: 'Listen and choose the correct room',
             audioText: 'I take a bath here. It is clean and fresh.',
             options: [
                 { emoji: '🛁', label: 'bathroom', correct: true },
@@ -340,31 +397,49 @@
         }
     ];
 
-    // 第三关：口语输出 (展示一个房间图片，学生根据框架介绍)
+    // 第三关：口语输出 (具体房间图片，包含多个元素)
     const SPEECH_LEVELS = [
         {
             emoji: '🛋️',
+            subEmojis: '📺 🪑',
             roomName: 'Living Room',
+            roomNameCn: '客厅',
             color: 'warm yellow',
+            colorCn: '暖黄色',
             size: 'spacious',
-            furniture: 'sofa and a TV',
-            hint: 'This is my living room. It is warm yellow. There is a sofa and a TV.'
+            sizeCn: '宽敞',
+            furniture: 'sofa, TV and a chair',
+            furnitureCn: '沙发、电视和椅子',
+            hint: 'This is my living room. It is warm yellow and spacious. There is a sofa, a TV and a chair.',
+            hintCn: '这是我的客厅。它是暖黄色的，很宽敞。有一张沙发、一台电视和一把椅子。'
         },
         {
             emoji: '🛏️',
+            subEmojis: '💡 📚',
             roomName: 'Bedroom',
+            roomNameCn: '卧室',
             color: 'light blue',
+            colorCn: '浅蓝色',
             size: 'quiet',
-            furniture: 'bed and a lamp',
-            hint: 'This is my bedroom. It is light blue. There is a bed and a lamp.'
+            sizeCn: '安静',
+            furniture: 'bed, a lamp and books',
+            furnitureCn: '床、台灯和书',
+            hint: 'This is my bedroom. It is light blue and quiet. There is a bed, a lamp and some books.',
+            hintCn: '这是我的卧室。它是浅蓝色的，很安静。有一张床、一盏台灯和一些书。'
         },
         {
             emoji: '🍳',
+            subEmojis: '🧊 🍽️',
             roomName: 'Kitchen',
+            roomNameCn: '厨房',
             color: 'light green',
+            colorCn: '浅绿色',
             size: 'bright',
-            furniture: 'stove and a fridge',
-            hint: 'This is my kitchen. It is light green. There is a stove and a fridge.'
+            sizeCn: '明亮',
+            furniture: 'stove, fridge and a plate',
+            furnitureCn: '炉灶、冰箱和盘子',
+            hint: 'This is my kitchen. It is light green and bright. There is a stove, a fridge and a plate.',
+            hintCn: '这是我的厨房。它是浅绿色的，很明亮。有一个炉灶、一个冰箱和一个盘子。'
         }
     ];
 
@@ -374,6 +449,14 @@
     let score = 0;
     let isAnswered = false;
     let audioSynth = window.speechSynthesis;
+    let gameStudentName = '';
+    let gameResultSubmitted = false;
+    let gameTranscriptLog = [];
+    let micStream = null;
+    let recognition = null;
+    let micReady = false;
+    let recognitionSupported = false;
+    let currentTranscript = '';
 
     // 第一关匹配状态
     let matchCards = [];
@@ -386,13 +469,165 @@
     const scoreDisplay = document.getElementById('scoreDisplay');
     const progressFill = document.getElementById('progressFill');
 
+    function getQueryParam(name) {
+        try {
+            return new URLSearchParams(window.location.search).get(name) || '';
+        } catch (_) {
+            return '';
+        }
+    }
+
+    function initGameStudent() {
+        const queryName = getQueryParam('student').trim();
+        const storedName = (localStorage.getItem('houseDesignStudentName') || '').trim();
+        gameStudentName = queryName || storedName;
+        if (gameStudentName) {
+            localStorage.setItem('houseDesignStudentName', gameStudentName);
+        } else {
+            alert('Please enter your name on the home page before opening the game. / 请先在首页输入名字，再打开小游戏。');
+            window.location.href = './index.html';
+        }
+    }
+
+    function saveGameResult(scoreValue, maxScoreValue, percentValue) {
+        const payload = {
+            studentName: gameStudentName || 'Student',
+            score: scoreValue,
+            maxScore: maxScoreValue,
+            percent: percentValue,
+            transcriptLog: gameTranscriptLog.slice(),
+            completedAt: new Date().toISOString()
+        };
+        try {
+            localStorage.setItem('houseDesignLatestGameResult', JSON.stringify(payload));
+            localStorage.setItem('houseDesignLatestGameResult_' + encodeURIComponent((gameStudentName || '').trim().toLowerCase()), JSON.stringify(payload));
+        } catch (_) {}
+
+        if (window.location.protocol === 'file:' || gameResultSubmitted) return;
+        gameResultSubmitted = true;
+
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '/';
+        form.style.display = 'none';
+        const fields = {
+            'form-name': 'house-design-game-results',
+            'student_name': payload.studentName,
+            'score': String(payload.score),
+            'max_score': String(payload.maxScore),
+            'percent': String(payload.percent),
+            'result_json': JSON.stringify(payload),
+            'completed_at': payload.completedAt
+        };
+        Object.keys(fields).forEach((key) => {
+            const input = document.createElement(key === 'result_json' ? 'textarea' : 'input');
+            input.name = key;
+            input.value = fields[key];
+            form.appendChild(input);
+        });
+        document.body.appendChild(form);
+        form.submit();
+        setTimeout(() => { try { form.remove(); } catch (_) {} }, 1000);
+    }
+
+    function setupSpeechRecognition() {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        recognitionSupported = !!SpeechRecognition;
+        if (!recognitionSupported) return;
+        recognition = new SpeechRecognition();
+        recognition.lang = 'en-US';
+        recognition.interimResults = true;
+        recognition.continuous = false;
+        recognition.onresult = function (event) {
+            let transcript = '';
+            for (let i = event.resultIndex; i < event.results.length; i++) {
+                transcript += event.results[i][0].transcript + ' ';
+            }
+            currentTranscript = transcript.trim();
+            updateSpeechTranscript();
+        };
+        recognition.onerror = function () {
+            updateSpeechStatus('Mic ready, but speech recognition had a problem. You can still speak and then tap score. / 麦克风已开启，但语音识别出了点问题，你仍然可以说完后手动得分。');
+        };
+        recognition.onend = function () {
+            const listenBtn = document.getElementById('speechListenBtn');
+            if (listenBtn) listenBtn.disabled = false;
+        };
+    }
+
+    function updateSpeechStatus(text) {
+        const box = document.getElementById('speechStatus');
+        if (box) box.textContent = text;
+    }
+
+    function updateSpeechTranscript() {
+        const box = document.getElementById('speechTranscript');
+        if (box) {
+            box.textContent = currentTranscript || 'No speech captured yet. / 还没有识别到语音。';
+        }
+    }
+
+    async function enableMicrophone() {
+        if (micReady) {
+            updateSpeechStatus(recognitionSupported ? 'Microphone is ready. Tap Start Listening. / 麦克风已开启，点击开始收听。' : 'Microphone is ready. Your browser may not support speech-to-text. / 麦克风已开启，但浏览器可能不支持语音转文字。');
+            return;
+        }
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+            updateSpeechStatus('This browser does not support microphone access. / 这个浏览器不支持麦克风权限。');
+            return;
+        }
+        try {
+            micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            micReady = true;
+            updateSpeechStatus(recognitionSupported ? 'Microphone ready. Tap Start Listening and speak in English. / 麦克风已开启，点击开始收听并用英语说。' : 'Microphone ready. You can speak now, then tap score manually. / 麦克风已开启，你可以直接说，然后手动点得分。');
+        } catch (_) {
+            updateSpeechStatus('Microphone permission was denied. / 麦克风权限没有打开。');
+        }
+    }
+
+    function startSpeechCapture() {
+        if (!micReady) {
+            updateSpeechStatus('Please enable the microphone first. / 请先开启麦克风。');
+            return;
+        }
+        if (!recognitionSupported || !recognition) {
+            updateSpeechStatus('Speech-to-text is not supported here. Speak anyway, then tap score manually. / 当前浏览器不支持语音转文字，你可以说完后手动点得分。');
+            return;
+        }
+        try {
+            currentTranscript = '';
+            updateSpeechTranscript();
+            recognition.start();
+            const listenBtn = document.getElementById('speechListenBtn');
+            if (listenBtn) listenBtn.disabled = true;
+            updateSpeechStatus('Listening... Please describe your room. / 正在收听，请开始介绍你的房间。');
+        } catch (_) {
+            updateSpeechStatus('Could not start speech recognition. / 无法启动语音识别。');
+        }
+    }
+
+    // 鼓励语库 (中英双语)
+    const ENCOURAGE_PHRASES = [
+        { zh: '💪 再试一次！你可以的！', en: 'Try again! You can do it!' },
+        { zh: '😊 加油！继续努力！', en: 'Keep going! You\'ve got this!' },
+        { zh: '🌟 别放弃！再来一次！', en: 'Don\'t give up! Try one more time!' },
+        { zh: '👍 不错！再试试！', en: 'Nice try! Have another go!' },
+        { zh: '✨ 快接近了！再试一次！', en: 'You\'re getting closer! Try again!' }
+    ];
+
+    function getRandomEncourage() {
+        const p = ENCOURAGE_PHRASES[Math.floor(Math.random() * ENCOURAGE_PHRASES.length)];
+        return `${p.zh} ${p.en}`;
+    }
+
     function updateUI() {
         scoreDisplay.innerText = score;
         const totalSubLevels = getTotalSubLevels();
         const completed = getCompletedCount();
         const progress = (completed / totalSubLevels) * 100;
         progressFill.style.width = Math.min(progress, 100) + '%';
-        levelDisplay.innerText = `第 ${currentLevel} / 3 关`;
+        const levelNames = ['图文匹配 · Match', '听音选择 · Listen', '口语输出 · Speak'];
+        levelDisplay.innerText = `第 ${currentLevel} / 3 关 · ${levelNames[currentLevel-1]}`;
     }
 
     function getTotalSubLevels() {
@@ -428,15 +663,13 @@
         currentSubIndex = 0;
         matchedPairs = 0;
         selectedIndex = null;
-        // 生成卡片数据：一半图标，一半单词
+        // 生成卡片数据：一半图标，一半单词 (打乱顺序)
         let deck = [];
         PAIRS.forEach(p => {
-            // 图标卡
             deck.push({ pairId: p.id, type: 'icon', emoji: p.emoji, word: p.word, matched: false });
-            // 单词卡
             deck.push({ pairId: p.id, type: 'word', emoji: '', word: p.word, matched: false });
         });
-        // 打乱
+        // 洗牌 (每次顺序不同)
         for (let i = deck.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
             [deck[i], deck[j]] = [deck[j], deck[i]];
@@ -446,7 +679,10 @@
         questionArea.innerHTML = '';
         const prompt = document.createElement('div');
         prompt.className = 'question-prompt';
-        prompt.innerText = '🖼️ 点击配对：图标 ↔ 对应的英文单词 (消消乐)';
+        prompt.innerHTML = `
+            🖼️ 点击配对：图标 ↔ 对应的英文单词 (消消乐)
+            <span class="en">Match the icon with the correct word</span>
+        `;
         questionArea.appendChild(prompt);
 
         const grid = document.createElement('div');
@@ -472,7 +708,6 @@
             div.className = 'match-card';
             if (card.matched) div.classList.add('matched');
             if (selectedIndex === idx && !card.matched) div.classList.add('selected');
-            // 显示内容：图标卡显示 emoji，单词卡显示单词
             if (card.type === 'icon') {
                 div.innerHTML = `${card.emoji}`;
             } else {
@@ -485,12 +720,15 @@
         // 检查是否全部匹配
         if (matchCards.every(c => c.matched)) {
             const fb = document.getElementById('feedbackMsg');
-            if (fb) fb.innerText = '🎉 全部配对完成！进入下一关 ➡️';
+            if (fb) {
+                fb.innerHTML = '🎉 全部配对完成！进入下一关 ➡️ <span class="en">All matched! Go to next level</span>';
+                fb.style.color = '#2a7a2a';
+            }
             const oldBtn = document.querySelector('.next-btn');
             if (oldBtn) oldBtn.remove();
             const nextBtn = document.createElement('button');
             nextBtn.className = 'next-btn';
-            nextBtn.innerText = '➡️ 进入第二关';
+            nextBtn.innerText = '➡️ 进入第二关 · Go to Level 2';
             nextBtn.addEventListener('click', () => {
                 currentLevel = 2;
                 currentSubIndex = 0;
@@ -514,7 +752,6 @@
             renderMatchGrid();
             return;
         }
-        // 尝试配对：必须一个是图标，一个是单词，且 pairId 相同
         const first = matchCards[selectedIndex];
         const second = matchCards[index];
         if (first.type !== second.type && first.pairId === second.pairId) {
@@ -522,21 +759,23 @@
             first.matched = true;
             second.matched = true;
             matchedPairs++;
-            score += 10;
+            score += 5; // 每题5分，共8题40分
             updateUI();
             const fb = document.getElementById('feedbackMsg');
-            if (fb) fb.innerText = '✅ 配对成功！ +10分';
+            if (fb) {
+                fb.innerHTML = '✅ 配对成功！ +5分 <span class="en">Match! +5 points</span>';
+                fb.style.color = '#2a7a2a';
+            }
             selectedIndex = null;
             renderMatchGrid();
-            // 检查是否全部完成
             if (matchCards.every(c => c.matched)) {
                 const fb2 = document.getElementById('feedbackMsg');
-                if (fb2) fb2.innerText = '🎉 第一关完成！点击按钮进入第二关';
+                if (fb2) fb2.innerHTML = '🎉 第一关完成！点击按钮进入第二关 <span class="en">Level 1 complete! Go to Level 2</span>';
                 const oldBtn = document.querySelector('.next-btn');
                 if (oldBtn) oldBtn.remove();
                 const nextBtn = document.createElement('button');
                 nextBtn.className = 'next-btn';
-                nextBtn.innerText = '➡️ 进入第二关';
+                nextBtn.innerText = '➡️ 进入第二关 · Go to Level 2';
                 nextBtn.addEventListener('click', () => {
                     currentLevel = 2;
                     currentSubIndex = 0;
@@ -546,9 +785,12 @@
                 updateUI();
             }
         } else {
-            // 配对失败
+            // 配对失败 - 鼓励提示
             const fb = document.getElementById('feedbackMsg');
-            if (fb) fb.innerText = '❌ 不匹配，再试试！';
+            if (fb) {
+                fb.innerHTML = '❌ ' + getRandomEncourage();
+                fb.className = 'feedback-msg encourage';
+            }
             selectedIndex = null;
             renderMatchGrid();
         }
@@ -558,12 +800,11 @@
     function renderLevel2() {
         currentLevel = 2;
         if (currentSubIndex >= LISTEN_LEVELS.length) {
-            // 第二关完成，进入第三关
             questionArea.innerHTML = `
                 <div style="padding:20px; text-align:center;">
                     <div style="font-size:3rem;">🎧</div>
-                    <div style="font-size:1.5rem; font-weight:bold; margin:10px 0;">第二关完成！</div>
-                    <button class="next-btn" id="goToLevel3">➡️ 进入第三关 · 口语输出</button>
+                    <div style="font-size:1.5rem; font-weight:bold; margin:10px 0;">第二关完成！ <span style="font-size:1rem; font-weight:normal; display:block;">Level 2 Complete!</span></div>
+                    <button class="next-btn" id="goToLevel3">➡️ 进入第三关 · 口语输出 <span style="font-size:0.8rem; display:block;">Go to Level 3 · Speaking</span></button>
                 </div>
             `;
             document.getElementById('goToLevel3').addEventListener('click', () => {
@@ -581,13 +822,12 @@
 
         const prompt = document.createElement('div');
         prompt.className = 'question-prompt';
-        prompt.innerText = level.prompt;
+        prompt.innerHTML = `${level.prompt} <span class="en">${level.promptEn}</span>`;
         questionArea.appendChild(prompt);
 
-        // 播放按钮
         const audioBtn = document.createElement('button');
         audioBtn.className = 'audio-btn';
-        audioBtn.innerText = '🔊 点击播放句子';
+        audioBtn.innerText = '🔊 点击播放 · Listen';
         audioBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             speakText(level.audioText);
@@ -608,21 +848,20 @@
                 document.querySelectorAll('.option-btn').forEach(b => b.classList.add('disabled'));
                 if (isCorrect) {
                     btn.classList.add('correct');
-                    score += 10;
+                    score += 10; // 每题10分，4题共40分
                     updateUI();
-                    showFeedback2('✅ 正确！ +10分', 'success');
+                    showFeedback2('✅ 正确！ +10分 <span class="en">Correct! +10 points</span>', 'success');
                 } else {
                     btn.classList.add('wrong');
                     document.querySelectorAll('.option-btn').forEach(b => {
                         if (b.dataset.correct === 'true') b.classList.add('correct');
                     });
-                    showFeedback2('❌ 再听听看~', 'error');
+                    showFeedback2('❌ ' + getRandomEncourage(), 'error');
                 }
                 isAnswered = true;
-                // 显示下一题按钮
                 const nextBtn = document.createElement('button');
                 nextBtn.className = 'next-btn';
-                nextBtn.innerText = currentSubIndex === LISTEN_LEVELS.length - 1 ? '📢 完成第二关' : '➡️ 下一题';
+                nextBtn.innerText = currentSubIndex === LISTEN_LEVELS.length - 1 ? '📢 完成第二关 · Finish Level 2' : '➡️ 下一题 · Next';
                 nextBtn.addEventListener('click', () => {
                     currentSubIndex++;
                     renderLevel2();
@@ -643,14 +882,17 @@
     function showFeedback2(msg, type) {
         const fb = document.getElementById('feedbackMsg2');
         if (fb) {
-            fb.innerText = msg;
-            fb.style.color = type === 'success' ? '#2a7a2a' : '#a13a3a';
+            fb.innerHTML = msg;
+            fb.style.color = type === 'success' ? '#2a7a2a' : '#c47a1a';
+            if (type === 'error') fb.className = 'feedback-msg encourage';
+            else fb.className = 'feedback-msg';
         }
     }
 
-    // ================= 第三关：口语输出 =================
+    // ================= 第三关：口语输出 (具体房间图片) =================
     function renderLevel3() {
         currentLevel = 3;
+        currentTranscript = '';
         if (currentSubIndex >= SPEECH_LEVELS.length) {
             renderFinalScreen();
             return;
@@ -661,59 +903,74 @@
 
         const prompt = document.createElement('div');
         prompt.className = 'question-prompt';
-        prompt.innerText = `🎤 第 ${currentSubIndex + 1} 关 · 看图介绍你的房间`;
+        prompt.innerHTML = `🎤 第 ${currentSubIndex + 1} 关 · 看图介绍你的房间 <span class="en">Look at the picture and introduce your room</span>`;
         questionArea.appendChild(prompt);
 
         const card = document.createElement('div');
         card.className = 'speech-card';
         card.innerHTML = `
             <div style="text-align:center;">
-                <div class="room-emoji">${level.emoji}</div>
-                <div style="font-size:1.5rem; font-weight:bold; margin:8px 0;">${level.roomName}</div>
+                <div class="room-image">
+                    ${level.emoji}
+                    <span class="sub-emoji">${level.subEmojis}</span>
+                </div>
+                <div style="font-size:1.5rem; font-weight:bold; margin:8px 0;">
+                    ${level.roomName} · ${level.roomNameCn}
+                </div>
             </div>
             <div class="speech-frame">
-                <div>📋 语言框架：</div>
-                <div>1️⃣ <span class="highlight">This is my ______.</span></div>
-                <div>2️⃣ <span class="highlight">It is ______</span> (颜色).</div>
-                <div>3️⃣ <span class="highlight">There is a ______ and a ______.</span></div>
+                <div>📋 语言框架 · Language Framework：</div>
+                <div>1️⃣ <span class="highlight">This is my ______.</span>  (这是我的______。)</div>
+                <div>2️⃣ <span class="highlight">It is ______</span> (颜色 · color).</div>
+                <div>3️⃣ <span class="highlight">There is a ______ and a ______.</span> (有______和______。)</div>
                 <div style="margin-top:8px; background:#fff2d6; padding:8px; border-radius:20px; font-size:1rem;">
-                    💡 示例: ${level.hint}
+                    💡 示例 · Example: <br>
+                    <span style="font-weight:bold;">${level.hint}</span><br>
+                    <span style="color:#6b5a3e;">${level.hintCn}</span>
                 </div>
             </div>
             <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:12px;">
-                <button class="speech-btn" id="listenExampleBtn">🔊 听示例</button>
-                <button class="speech-btn" id="recordDoneBtn">✅ 我说完了，得分！</button>
+                <button class="speech-btn" id="listenExampleBtn">🔊 听示例 · Listen</button>
+                <button class="speech-btn" id="enableMicBtn" style="background:#f0a25e;box-shadow:0 4px 0 #b06d2e;">🎙️ 开启麦克风 · Enable Mic</button>
+                <button class="speech-btn" id="speechListenBtn" style="background:#2563eb;box-shadow:0 4px 0 #1d4ed8;">🗣️ 开始收听 · Start Listening</button>
+                <button class="speech-btn" id="recordDoneBtn">✅ 我说完了，得分！ <span style="font-size:0.8rem; display:block;">I\'m done! Score me!</span></button>
             </div>
+            <div class="speech-status" id="speechStatus">Tap Enable Mic first. Speech recognition will try to help, but manual scoring still works. / 先点开启麦克风。系统会尽量识别语音，但仍可手动得分。</div>
+            <div class="speech-transcript" id="speechTranscript">No speech captured yet. / 还没有识别到语音。</div>
         `;
         questionArea.appendChild(card);
 
         const feedback = document.createElement('div');
         feedback.className = 'feedback-msg';
         feedback.id = 'feedbackMsg3';
-        feedback.innerText = '👩‍🏫 请根据框架口头介绍，然后点击 "我说完了" 得分！';
+        feedback.innerHTML = '👩‍🏫 请根据框架口头介绍，然后点击 "我说完了" 得分！ <span class="en">Please introduce orally, then click "I\'m done!" to get points.</span>';
         questionArea.appendChild(feedback);
 
-        // 听示例
         document.getElementById('listenExampleBtn').addEventListener('click', () => {
             speakText(level.hint);
         });
+        document.getElementById('enableMicBtn').addEventListener('click', enableMicrophone);
+        document.getElementById('speechListenBtn').addEventListener('click', startSpeechCapture);
 
-        // 得分按钮 (老师或学生自评，点击给分)
         let scored = false;
         document.getElementById('recordDoneBtn').addEventListener('click', () => {
             if (scored) return;
             scored = true;
-            score += 15;
+            gameTranscriptLog.push({
+                level: currentSubIndex + 1,
+                roomName: level.roomName,
+                transcript: currentTranscript || ''
+            });
+            score += 20; // 每题20分，3题共60分
             updateUI();
             const fb = document.getElementById('feedbackMsg3');
             if (fb) {
-                fb.innerText = '🎉 太棒了！ +15分 口语小达人！';
+                fb.innerHTML = '🎉 太棒了！ +20分 口语小达人！ <span class="en">Great! +20 points! Speaking star!</span>';
                 fb.style.color = '#2a7a2a';
             }
-            // 显示下一关按钮
             const nextBtn = document.createElement('button');
             nextBtn.className = 'next-btn';
-            nextBtn.innerText = currentSubIndex === SPEECH_LEVELS.length - 1 ? '🏆 查看成绩' : '➡️ 下一房间';
+            nextBtn.innerText = currentSubIndex === SPEECH_LEVELS.length - 1 ? '🏆 查看成绩 · See Results' : '➡️ 下一房间 · Next Room';
             nextBtn.addEventListener('click', () => {
                 currentSubIndex++;
                 renderLevel3();
@@ -726,18 +983,29 @@
 
     // ================= 最终结算 =================
     function renderFinalScreen() {
+        const maxScore = 140; // 第一关40 + 第二关40 + 第三关60
+        const percent = Math.round((score / maxScore) * 100);
+        saveGameResult(score, maxScore, percent);
         questionArea.innerHTML = `
             <div class="final-screen">
                 <div class="big-emoji">🏆</div>
-                <div class="title">🎉 闯关完成！</div>
-                <div style="font-size:2.5rem; margin: 10px 0;">⭐ ${score} 分</div>
-                <div style="font-size:1.2rem; margin-bottom:20px;">你已经是优秀的小小设计师啦！</div>
-                <button class="reset-btn" id="resetGameBtn">🔄 重新挑战</button>
+                <div class="title">🎉 闯关完成！ <span style="font-size:1.2rem; display:block; font-weight:normal;">All Levels Complete!</span></div>
+                <div style="font-size:2.5rem; margin: 10px 0;">⭐ ${score} / ${maxScore} 分 · points</div>
+                <div style="font-size:1.8rem; font-weight:bold; color:#4c9f70;">${percent}%</div>
+                <div style="font-size:1.2rem; margin-bottom:20px;">你已经是优秀的小小设计师啦！ <span style="display:block; font-weight:normal; color:#6b5a3e;">You are a great little designer!</span></div>
+                <div style="display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin-top:20px">
+                    <button class="reset-btn" id="resetGameBtn">🔄 重新挑战 · Play Again</button>
+                    <button class="reset-btn" id="backHomeBtn" style="background:#4c9f70">🏠 返回首页 · Back to Home</button>
+                </div>
             </div>
         `;
         document.getElementById('resetGameBtn').addEventListener('click', resetGame);
+        document.getElementById('backHomeBtn').addEventListener('click', function () {
+            const target = './index.html' + (gameStudentName ? ('?student=' + encodeURIComponent(gameStudentName)) : '');
+            window.location.href = target;
+        });
         progressFill.style.width = '100%';
-        levelDisplay.innerText = '🏁 通关';
+        levelDisplay.innerText = '🏁 通关 · Complete';
     }
 
     // ================= 重置 =================
@@ -747,12 +1015,15 @@
         score = 0;
         matchedPairs = 0;
         selectedIndex = null;
+        gameResultSubmitted = false;
         if (audioSynth) audioSynth.cancel();
         renderLevel1();
         updateUI();
     }
 
     // ================= 启动 =================
+    initGameStudent();
+    setupSpeechRecognition();
     renderLevel1();
     updateUI();
 </script>

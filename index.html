@@ -1287,6 +1287,10 @@
   .mascot-foot{width:10px;height:6px;background:#1e40af;border-radius:2px 2px 4px 4px}
   .math-panel{background:#ffffff;border:2px solid #e2e8f0;border-radius:12px;padding:12px 14px;margin:8px 10px;box-shadow:0 2px 6px rgba(0,0,0,.04)}
   .math-panel h4{font-size:14px;color:#1e40af;margin-bottom:8px;font-weight:700}
+  .math-panel-head{display:flex;align-items:center;justify-content:space-between;gap:8px}
+  .math-panel-head h4{margin-bottom:0}
+  .math-toggle{display:none;min-width:34px;height:34px;border-radius:9px;background:#eff6ff;border:1.5px solid #bfdbfe;color:#1d4ed8;font-size:16px;font-weight:800;align-items:center;justify-content:center}
+  .math-panel-body{margin-top:8px}
   .math-row{display:-webkit-flex;display:-webkit-flex;display:flex;justify-content:space-between;align-items:center;font-size:13px;margin:4px 0;color:#475569}
   .math-row b{color:#1e293b}
   .math-bar{height:10px;background:#e2e8f0;border-radius:5px;margin-top:6px;overflow:hidden}
@@ -1406,6 +1410,12 @@
     .scene-ui{max-width:210px;font-size:12px}
     .floating-actions{bottom:20px;left:20px;gap:12px}
     .overview-grid{grid-template-columns:repeat(auto-fill,minmax(230px,1fr))}
+  }
+
+  @media (max-width:1100px) and (min-width:745px){
+    .math-panel.is-collapsible .math-toggle{display:inline-flex}
+    .math-panel.is-collapsible.collapsed .math-panel-body{display:none}
+    .math-panel.is-collapsible.collapsed{padding-bottom:10px}
   }
 
   /* === Android tablet portrait: keep the 3D area usable on 800x1280 style screens === */
@@ -1542,6 +1552,8 @@
   .teacher-note:nth-child(3n+3){background:#f5f3ff;border-color:#c4b5fd}
   .teacher-note:before{content:'';position:absolute;top:10px;right:12px;width:42px;height:10px;border-radius:999px;background:rgba(255,255,255,.65);box-shadow:0 1px 0 rgba(255,255,255,.8)}
   .teacher-note h3{font-size:18px;color:#1f2937;margin-bottom:6px;padding-right:32px}
+  .teacher-note-title{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .teacher-crown{font-size:16px;line-height:1}
   .teacher-note-meta{font-size:12px;color:#6b7280;line-height:1.6;margin-bottom:10px}
   .teacher-note-section{margin-top:10px;padding-top:10px;border-top:1px dashed rgba(100,116,139,.25)}
   .teacher-note-section h4{font-size:12px;color:#475569;margin-bottom:6px;text-transform:uppercase;letter-spacing:.04em}
@@ -1594,6 +1606,17 @@
   <input type="number" name="stars">
   <textarea name="comment"></textarea>
   <input type="text" name="created_at">
+  <button type="submit">Submit</button>
+</form>
+
+<form name="house-design-game-results" method="POST" action="/" data-netlify="true" style="display:none">
+  <input type="hidden" name="form-name" value="house-design-game-results">
+  <input type="text" name="student_name">
+  <input type="text" name="score">
+  <input type="text" name="max_score">
+  <input type="text" name="percent">
+  <textarea name="result_json"></textarea>
+  <input type="text" name="completed_at">
   <button type="submit">Submit</button>
 </form>
 
@@ -1653,7 +1676,7 @@
       <input id="studentNameInput" type="text" autocomplete="name" placeholder="Type your name / 输入你的名字">
     </div>
     <div class="home-link-row">
-      <a class="home-link-btn" href="./Game.html">Open Game / 打开游戏</a>
+      <a class="home-link-btn" href="./Game.html" onclick="return openGamePage(event)">Open Game / 打开游戏</a>
     </div>
   </div>
   <div class="style-grid" id="styleGrid"></div>
@@ -1700,13 +1723,18 @@
       <div id="sideColorPicker" style="display:-webkit-flex;display:-webkit-flex;display:flex;gap:6px;flex-wrap:wrap;justify-content:center"></div>
     </div>
     <div class="math-panel" id="mathPanel">
-      <h4>📐 Space & Budget / 空间与预算</h4>
-      <div class="math-row">Room area / 房间面积: <b id="mathRoomArea">— m²</b></div>
-      <div class="math-row">Furniture count / 家具数量: <b id="mathCount">0</b></div>
-      <div class="math-row">Used area / 已用面积: <b id="mathUsed">0 m²</b></div>
-      <div class="math-row">Free area / 剩余面积: <b id="mathFree">— m²</b></div>
-      <div class="math-row">💰 Budget / 预算: <b id="mathBudget" style="color:#f59e0b">¥0</b></div>
-      <div class="math-bar"><div class="math-bar-fill good" id="mathBarFill" style="width:0%"></div></div>
+      <div class="math-panel-head">
+        <h4>📐 Space & Budget / 空间与预算</h4>
+        <button type="button" class="math-toggle" id="mathPanelToggle" onclick="toggleMathPanel()" aria-label="Toggle space and budget">−</button>
+      </div>
+      <div class="math-panel-body" id="mathPanelBody">
+        <div class="math-row">Room area / 房间面积: <b id="mathRoomArea">— m²</b></div>
+        <div class="math-row">Furniture count / 家具数量: <b id="mathCount">0</b></div>
+        <div class="math-row">Used area / 已用面积: <b id="mathUsed">0 m²</b></div>
+        <div class="math-row">Free area / 剩余面积: <b id="mathFree">— m²</b></div>
+        <div class="math-row">💰 Budget / 预算: <b id="mathBudget" style="color:#f59e0b">¥0</b></div>
+        <div class="math-bar"><div class="math-bar-fill good" id="mathBarFill" style="width:0%"></div></div>
+      </div>
     </div>
     <div class="furniture-list" id="furnitureList"></div>
     <div class="side-footer">
@@ -4077,6 +4105,20 @@ function getStudentName(){
   return studentName;
 }
 
+function openGamePage(event){
+  const name=getStudentName();
+  if(!name){
+    if(event)event.preventDefault();
+    alert('Please enter your name first before opening the game. / 打开小游戏前请先输入你的名字。');
+    const input=document.getElementById('studentNameInput');
+    if(input)input.focus();
+    return false;
+  }
+  const target='./Game.html?student='+encodeURIComponent(name);
+  if(event&&event.currentTarget)event.currentTarget.href=target;
+  return true;
+}
+
 function showRandomTip(){
   let idx;
   do{idx=Math.floor(Math.random()*MASCOT_TIPS.length);}while(idx===lastTipIdx&&MASCOT_TIPS.length>1);
@@ -4114,6 +4156,7 @@ function goToRoom(){
   document.getElementById('stage-room').classList.add('active');
   document.getElementById('styleLabel').textContent='Style / 风格: '+STYLES[chosenStyle].name+' '+STYLES[chosenStyle].nameCn;
   renderRoomCards();
+  applyResponsiveMathPanel();
   showMascotTip('Now pick a room and choose its size! / 现在选一个房间并选择大小！');
 }
 
@@ -4544,6 +4587,14 @@ function renderSelfEvaluationSummary(items){
   return html;
 }
 
+function renderGameResultSummary(result){
+  if(!result)return '<div class="teacher-note-empty">No game result yet</div>';
+  const score=Number(result.score||0);
+  const maxScore=Number(result.maxScore||0);
+  const percent=Number(result.percent||0);
+  return '<div class="teacher-note-review">🏆 <b>'+score+' / '+maxScore+'</b><br>'+percent+'%</div>';
+}
+
 function normalizeStudentName(name){
   return String(name||'').trim().toLowerCase();
 }
@@ -4943,7 +4994,8 @@ function teacherResetEditCode(idx){
   }));
 }
 
-function fetchSubmissionsData(onSuccess,onFailure){
+function fetchSubmissionsData(onSuccess,onFailure,options){
+  const settings=options||{};
   const xhr=new XMLHttpRequest();
   xhr.open('GET','/.netlify/functions/submissions?ts='+Date.now(),true);
   xhr.onreadystatechange=function(){
@@ -4965,7 +5017,8 @@ function fetchSubmissionsData(onSuccess,onFailure){
       if(onFailure)onFailure(data.error);
       return;
     }
-    if(onSuccess)onSuccess(mergeSubmissions(data.designs||[]));
+    const remoteDesigns=Array.isArray(data.designs)?data.designs:[];
+    if(onSuccess)onSuccess(settings.includePending===false?remoteDesigns:mergeSubmissions(remoteDesigns));
   };
   xhr.onerror=function(){
     if(onFailure)onFailure('Could not reach the Netlify function.');
@@ -4981,6 +5034,8 @@ function loadClassSubmissions(){
   },function(message,isSetup){
     const title=isSetup?'Setup required':'Cannot load submissions';
     setSubmissionBody('<div class="submission-card"><h3>'+title+'</h3><div class="submission-meta">'+escapeHtml(message)+'</div></div>');
+  },{
+    includePending:true
   });
 }
 
@@ -4993,6 +5048,8 @@ function loadTeacherBoard(){
   },function(message,isSetup){
     const title=isSetup?'Setup required':'Cannot load teacher board';
     setTeacherBoardBody('<div class="submission-card"><h3>'+title+'</h3><div class="submission-meta">'+escapeHtml(message)+'</div></div>');
+  },{
+    includePending:false
   });
 }
 
@@ -5004,10 +5061,14 @@ function renderTeacherBoard(){
     return;
   }
   let reviewTotal=0, selfEvalSelected=0;
+  let topAverage=0;
   items.forEach(item=>{
     reviewTotal+=(item.reviewCount||0);
     const selfEval=((item.design&&item.design.selfEvaluation)||[]);
     selfEvalSelected+=selfEval.filter(entry=>entry&&entry.selected).length;
+    if((item.reviewCount||0)>0){
+      topAverage=Math.max(topAverage,Number(item.averageStars)||0);
+    }
   });
   let statsHtml='';
   statsHtml+='<div class="teacher-stat"><b>'+items.length+'</b><span>Designs</span></div>';
@@ -5016,11 +5077,14 @@ function renderTeacherBoard(){
   setTeacherBoardStats(statsHtml);
   let html='<div class="teacher-board-grid">';
   items.forEach((item,idx)=>{
+    const isTopRated=(item.reviewCount||0)>0&&topAverage>0&&Math.abs((Number(item.averageStars)||0)-topAverage)<0.001;
     html+='<div class="teacher-note">';
-    html+='<h3>'+escapeHtml(item.studentName||'Student')+'</h3>';
+    html+='<h3 class="teacher-note-title"><span>'+escapeHtml(item.studentName||'Student')+'</span>'+(isTopRated?'<span class="teacher-crown" title="Highest peer rating">👑</span>':'')+'</h3>';
     html+='<div class="teacher-note-meta">'+escapeHtml(item.styleName||item.style||'')+'<br>'+escapeHtml(item.submittedAt||'')+'</div>';
+    html+='<div class="teacher-note-section"><h4>Game Result</h4>'+renderGameResultSummary(item.gameResult)+'</div>';
     html+='<div class="teacher-note-section"><h4>Self Evaluation</h4>'+renderSelfEvaluationSummary(item.design&&item.design.selfEvaluation)+'</div>';
     html+='<div class="teacher-note-section"><h4>Peer Comments</h4>';
+    html+='<div class="teacher-note-review">'+(item.averageStars?renderDisplayStars(item.averageStars,true):'<span class="teacher-note-empty">No peer rating yet</span>')+'</div>';
     if(item.reviews&&item.reviews.length){
       item.reviews.slice(0,4).forEach(review=>{
         html+='<div class="teacher-note-review"><b>'+escapeHtml(review.reviewerName||'Reviewer')+'</b><br>'+renderDisplayStars(review.stars,false)+'<br>'+escapeHtml(review.comment||'')+'</div>';
@@ -6737,6 +6801,44 @@ function goToEvaluate(){
   certEl.innerHTML=`<div style="font-size:36px;margin:10px 0;font-weight:900;color:${gradeColor}">${grade} ${gradeCn}</div><p>${s.icon} ${s.name} ${s.nameCn} ${r.icon} ${r.name} ${r.nameCn} · ${placedItems.length} furniture / 家具 · ${sv.area} m² · ¥${totalCost.toLocaleString()}</p>`;
 }
 
+function updateMathPanelToggleLabel(){
+  const panel=document.getElementById('mathPanel');
+  const btn=document.getElementById('mathPanelToggle');
+  if(!panel||!btn)return;
+  const collapsed=panel.classList.contains('collapsed');
+  btn.textContent=collapsed?'+':'−';
+  btn.setAttribute('aria-expanded',collapsed?'false':'true');
+  btn.title=collapsed?'Expand / 展开':'Collapse / 收起';
+}
+
+function applyResponsiveMathPanel(){
+  const panel=document.getElementById('mathPanel');
+  if(!panel)return;
+  const shouldCollapse=window.innerWidth<=1100&&window.innerWidth>=745;
+  if(shouldCollapse){
+    panel.classList.add('is-collapsible');
+    if(panel.dataset.userCollapsed!=='false'&&panel.dataset.userCollapsed!=='true'){
+      panel.classList.add('collapsed');
+      panel.dataset.userCollapsed='true';
+    }else{
+      panel.classList.toggle('collapsed',panel.dataset.userCollapsed==='true');
+    }
+  }else{
+    panel.classList.remove('is-collapsible');
+    panel.classList.remove('collapsed');
+  }
+  updateMathPanelToggleLabel();
+}
+
+function toggleMathPanel(){
+  const panel=document.getElementById('mathPanel');
+  if(!panel||!panel.classList.contains('is-collapsible'))return;
+  const willCollapse=!panel.classList.contains('collapsed');
+  panel.classList.toggle('collapsed',willCollapse);
+  panel.dataset.userCollapsed=willCollapse?'true':'false';
+  updateMathPanelToggleLabel();
+}
+
 function finishGame(){
   const text=sentences.length?sentences.join(' '):'I designed my dream home!';
   alert('🎉 Great job!\n\n'+text+'\n\nYou can now read your story aloud to the class!');
@@ -6787,6 +6889,8 @@ document.addEventListener('click',function(e){
   if(!tools)return;
   if(!tools.contains(e.target))closeToolsMenu();
 });
+window.addEventListener('resize',applyResponsiveMathPanel);
+applyResponsiveMathPanel();
 </script>
 </body>
 </html>
