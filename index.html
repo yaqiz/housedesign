@@ -1202,6 +1202,7 @@
   .fitem:hover{border-color:#3b82f6;background:#eff6ff}
   .fitem.disabled{opacity:.4;cursor:not-allowed}
   .fitem .f-emoji{font-size:26px;display:block;margin-bottom:2px}
+  .fitem .f-emoji-img{width:26px;height:26px;display:block;margin:0 auto 2px}
   .fitem .f-label{font-size:13px;color:#1e293b;font-weight:600}
   .fitem .f-size{font-size:10px;color:#64748b;margin-top:2px}
   .fitem .f-area{font-size:10px;color:#3b82f6;margin-top:1px;font-weight:600}
@@ -1663,9 +1664,6 @@
     <div class="student-name-panel">
       <label for="studentNameInput">Who are you? / 我是谁</label>
       <input id="studentNameInput" type="text" autocomplete="name" placeholder="Type your name / 输入你的名字">
-    </div>
-    <div class="home-link-row">
-      <a class="home-link-btn" href="./emoji-test.html">Icon Test / 图标测试</a>
     </div>
   </div>
   <div class="style-grid" id="styleGrid"></div>
@@ -4353,22 +4351,62 @@ function toggleWordBank(){
   if(box)box.classList.toggle('open');
 }
 
-function speakWordBank(event,text){
-  if(event){event.stopPropagation();}
+let currentWordAudio=null;
+function getAudioSlug(text){
+  return String(text||'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'');
+}
+
+function stopLocalWordAudio(){
+  try{
+    if(currentWordAudio){
+      currentWordAudio.pause();
+      currentWordAudio.currentTime=0;
+      currentWordAudio=null;
+    }
+  }catch(e){}
+}
+
+function fallbackSpeakText(text, rate){
   if(typeof speechSynthesis==='undefined')return;
   try{
     speechSynthesis.cancel();
     const utt=new SpeechSynthesisUtterance(text);
     utt.lang='en-US';
-    utt.rate=0.9;
+    utt.rate=rate||0.9;
     utt.pitch=1;
     speechSynthesis.speak(utt);
   }catch(e){}
 }
 
+function playLocalWordAudio(text, rate){
+  const slug=getAudioSlug(text);
+  if(!slug)return false;
+  try{
+    stopLocalWordAudio();
+    const audio=new Audio('./audio/'+slug+'.mp3');
+    currentWordAudio=audio;
+    audio.onended=()=>{if(currentWordAudio===audio)currentWordAudio=null;};
+    audio.onerror=()=>{if(currentWordAudio===audio)currentWordAudio=null;fallbackSpeakText(text,rate);};
+    const playPromise=audio.play();
+    if(playPromise&&typeof playPromise.catch==='function'){
+      playPromise.catch(()=>fallbackSpeakText(text,rate));
+    }
+    return true;
+  }catch(e){
+    return false;
+  }
+}
+
+function speakWordBank(event,text){
+  if(event){event.stopPropagation();}
+  if(playLocalWordAudio(text,0.9))return;
+  fallbackSpeakText(text,0.9);
+}
+
 function showOverview(){
   saveCurrentDesign();
   const currentStudent=getStudentName()||'Student';
+  stopLocalWordAudio();
   if(typeof speechSynthesis!=='undefined'){try{speechSynthesis.cancel();}catch(e){}}
   document.querySelectorAll('.stage').forEach(s=>s.classList.remove('active'));
   document.getElementById('stage-overview').classList.add('active');
@@ -5048,8 +5086,8 @@ function renderTeacherBoard(){
     html+='<div class="teacher-note">';
     html+='<h3 class="teacher-note-title"><span>'+escapeHtml(item.studentName||'Student')+'</span>'+(isTopRated?'<span class="teacher-crown" title="Highest peer rating">👑</span><span class="teacher-best-label">The Best Designer</span>':'')+'</h3>';
     html+='<div class="teacher-note-meta">'+escapeHtml(item.styleName||item.style||'')+'<br>'+escapeHtml(item.submittedAt||'')+'</div>';
-    html+='<div class="teacher-note-section"><h4>Self Evaluation</h4>'+renderSelfEvaluationSummary(item.design&&item.design.selfEvaluation)+'</div>';
-    html+='<div class="teacher-note-section"><h4>Peer Comments</h4>';
+    html+='<div class="teacher-note-section"><h4>Self Evaluation / 自我评价</h4>'+renderSelfEvaluationSummary(item.design&&item.design.selfEvaluation)+'</div>';
+    html+='<div class="teacher-note-section"><h4>Peer Comments / 同学评价</h4>';
     html+='<div class="teacher-note-review">'+(item.averageStars?renderDisplayStars(item.averageStars,true):'<span class="teacher-note-empty">No peer rating yet</span>')+'</div>';
     if(item.reviews&&item.reviews.length){
       item.reviews.slice(0,4).forEach(review=>{
@@ -5994,6 +6032,36 @@ function onResize(){
 }
 
 function _animateLegacyPlaceholder(){}
+function getFurnitureIconMarkup(item){
+  if(!item){
+    return '<span class="f-emoji"></span>';
+  }
+  if(item.id==='plant'){
+    return '<img class="f-emoji-img" src="./color-plant.svg" alt="plant">';
+  }
+  if(item.id==='chair'){
+    return '<img class="f-emoji-img" src="./color-chair.svg" alt="chair">';
+  }
+  if(item.id==='rockingchair'){
+    return '<img class="f-emoji-img" src="./color-rocking-chair.svg" alt="rocking chair">';
+  }
+  if(item.id==='stool'){
+    return '<img class="f-emoji-img" src="./color-stool.svg" alt="stool">';
+  }
+  if(item.id==='fridge'){
+    return '<img class="f-emoji-img" src="./color-fridge.svg" alt="fridge">';
+  }
+  if(item.id==='mirror'){
+    return '<img class="f-emoji-img" src="./color-mirror.svg" alt="mirror">';
+  }
+  if(item.id==='rug' && /bath mat/i.test(item.label||'')){
+    return '<img class="f-emoji-img" src="./color-bath-mat.svg" alt="bath mat">';
+  }
+  if(item.id==='rug'){
+    return '<img class="f-emoji-img" src="./color-rug.svg" alt="rug">';
+  }
+  return '<span class="f-emoji">'+(item.emoji||'')+'</span>';
+}
 function renderFurnitureList(){
   const list=document.getElementById('furnitureList');list.innerHTML='';
   const items=FURNITURE[chosenRoom];
@@ -6002,7 +6070,7 @@ function renderFurnitureList(){
   const max=Math.max(2,Math.floor(sv.area/2.5));
   items.forEach(f=>{
     const el=document.createElement('div');el.className='fitem';el.dataset.id=f.id;
-el.innerHTML=`<div class="remove-x" title="Remove">×</div><div class="f-speak" title="朗读 / Speak">🔊</div><span class="f-emoji">${f.emoji}</span><div class="f-label">${f.label} ${f.labelCn}</div><div class="f-dims">${f.w}×${f.l}cm</div><div class="f-price">¥${(f.price||0).toLocaleString()}</div>`;
+el.innerHTML=`<div class="remove-x" title="Remove">×</div><div class="f-speak" title="朗读 / Speak">🔊</div>${getFurnitureIconMarkup(f)}<div class="f-label">${f.label} ${f.labelCn}</div><div class="f-dims">${f.w}×${f.l}cm</div><div class="f-price">¥${(f.price||0).toLocaleString()}</div>`;
     el.onmouseenter=()=>showToast(f.label+' '+f.labelCn,f.tip);
     el.onmouseleave=()=>hideToast();
     el.onclick=()=>addFurniture(f);
@@ -6016,9 +6084,8 @@ el.innerHTML=`<div class="remove-x" title="Remove">×</div><div class="f-speak" 
   updateCount();
 }
 function speakLabel(label){
-  if(typeof speechSynthesis!=='undefined'){
-    try{speechSynthesis.cancel();const utt=new SpeechSynthesisUtterance(label);utt.lang='en-US';utt.rate=0.85;speechSynthesis.speak(utt);}catch(e){}
-  }
+  if(playLocalWordAudio(label,0.85))return;
+  fallbackSpeakText(label,0.85);
 }
 
 function refreshFurnitureListState(){
@@ -6816,6 +6883,7 @@ function finishGame(){
 let isReading=false;
 function readAloud(){
   const btn=document.getElementById('readAloudBtn');
+  stopLocalWordAudio();
   if(typeof speechSynthesis==='undefined'){
     alert('Sorry, your browser does not support text-to-speech.');
     return;
