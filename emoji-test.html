@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Emoji Test</title>
+  <style>
+    body{
+      margin:0;
+      padding:24px;
+      font-family:Arial,Helvetica,sans-serif;
+      background:#f8fafc;
+      color:#0f172a;
+    }
+    h1{
+      margin:0 0 8px;
+      font-size:28px;
+    }
+    p{
+      margin:0 0 24px;
+      color:#475569;
+    }
+    .section{
+      background:#ffffff;
+      border:1px solid #dbeafe;
+      border-radius:16px;
+      padding:20px;
+      margin-bottom:20px;
+      box-shadow:0 6px 18px rgba(15,23,42,.06);
+    }
+    .section h2{
+      margin:0 0 16px;
+      font-size:22px;
+      color:#1d4ed8;
+    }
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+      gap:14px;
+    }
+    .card{
+      border:1px solid #e2e8f0;
+      border-radius:14px;
+      padding:16px;
+      text-align:center;
+      background:#f8fafc;
+    }
+    .emoji{
+      font-size:44px;
+      line-height:1.2;
+      margin-bottom:10px;
+    }
+    .name{
+      font-size:15px;
+      font-weight:700;
+      margin-bottom:6px;
+    }
+    .code{
+      font-size:13px;
+      color:#64748b;
+      word-break:break-all;
+    }
+    .svg-grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+      gap:14px;
+    }
+    .svg-card{
+      border:1px solid #e2e8f0;
+      border-radius:14px;
+      padding:16px;
+      text-align:center;
+      background:#f8fafc;
+    }
+    .svg-icon-wrap{
+      width:32px;
+      height:32px;
+      margin:0 auto 10px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+    .svg-icon{
+      width:26px;
+      height:26px;
+      display:block;
+    }
+    .speak-btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      width:28px;
+      height:28px;
+      margin-top:8px;
+      border:1px solid #bfdbfe;
+      border-radius:999px;
+      background:#eff6ff;
+      color:#2563eb;
+      cursor:pointer;
+      font-size:14px;
+      line-height:1;
+    }
+    .speak-btn:active{
+      transform:scale(.96);
+    }
+    .silver{
+      filter:grayscale(1) brightness(1.25);
+    }
+  </style>
+</head>
+<body>
+  <h1>Emoji Test / Emoji 显示测试</h1>
+  <p>Open this page on the target tablet and check which emoji can display correctly.</p>
+
+  <div class="section">
+    <h2>1. Plants / 植物</h2>
+    <div class="grid">
+      <div class="card"><div class="emoji">🪴</div><div class="name">1. &lt;plant&gt; Potted Plant</div><div class="code">U+1FAB4</div></div>
+      <div class="card"><div class="emoji">🌱</div><div class="name">2. Seedling</div><div class="code">U+1F331</div></div>
+      <div class="card"><div class="emoji">🌿</div><div class="name">3. Herb</div><div class="code">U+1F33F</div></div>
+      <div class="card"><div class="emoji">☘️</div><div class="name">4. Shamrock</div><div class="code">U+2618 U+FE0F</div></div>
+      <div class="card"><div class="emoji">🍀</div><div class="name">5. Four Leaf Clover</div><div class="code">U+1F340</div></div>
+      <div class="card"><div class="emoji">🌵</div><div class="name">6. Cactus</div><div class="code">U+1F335</div></div>
+      <div class="card"><div class="emoji">🌲</div><div class="name">7. Evergreen Tree</div><div class="code">U+1F332</div></div>
+      <div class="card"><div class="emoji">🌳</div><div class="name">8. Deciduous Tree</div><div class="code">U+1F333</div></div>
+      <div class="card"><div class="emoji">🎋</div><div class="name">9. Tanabata Tree</div><div class="code">U+1F38B</div></div>
+      <div class="card"><div class="emoji">🪷</div><div class="name">10. Lotus</div><div class="code">U+1FAB7</div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>2. Chairs / 椅子</h2>
+    <div class="grid">
+      <div class="card"><div class="emoji">🪑</div><div class="name">11. &lt;chair&gt; Chair</div><div class="code">U+1FA91</div></div>
+      <div class="card"><div class="emoji">💺</div><div class="name">12. Seat</div><div class="code">U+1F4BA</div></div>
+      <div class="card"><div class="emoji">🛋️</div><div class="name">13. Couch and Lamp</div><div class="code">U+1F6CB U+FE0F</div></div>
+      <div class="card"><div class="emoji">🚽</div><div class="name">14. Toilet Seat</div><div class="code">U+1F6BD</div></div>
+      <div class="card"><div class="emoji">🦽</div><div class="name">15. Manual Wheelchair</div><div class="code">U+1F9BD</div></div>
+      <div class="card"><div class="emoji">🦼</div><div class="name">16. Motorized Wheelchair</div><div class="code">U+1F9BC</div></div>
+      <div class="card"><div class="emoji">♿</div><div class="name">17. Wheelchair Symbol</div><div class="code">U+267F</div></div>
+      <div class="card"><div class="emoji">♿️</div><div class="name">18. Wheelchair Symbol Emoji Style</div><div class="code">U+267F U+FE0F</div></div>
+      <div class="card"><div class="emoji">💺︎</div><div class="name">19. Seat Text Style</div><div class="code">U+1F4BA U+FE0E</div></div>
+      <div class="card"><div class="emoji">💺️</div><div class="name">20. Seat Emoji Style</div><div class="code">U+1F4BA U+FE0F</div></div>
+      <div class="card"><div class="emoji">🪑︎</div><div class="name">21. Chair Text Style</div><div class="code">U+1FA91 U+FE0E</div></div>
+      <div class="card"><div class="emoji">🪑️</div><div class="name">22. Chair Emoji Style</div><div class="code">U+1FA91 U+FE0F</div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>3. Rug / 地毯 / Brown Block</h2>
+    <div class="grid">
+      <div class="card"><div class="emoji">🟫</div><div class="name">23. Brown Square</div><div class="code">U+1F7EB</div></div>
+      <div class="card"><div class="emoji">🟧</div><div class="name">24. Orange Square</div><div class="code">U+1F7E7</div></div>
+      <div class="card"><div class="emoji">⬛</div><div class="name">25. Black Large Square</div><div class="code">U+2B1B</div></div>
+      <div class="card"><div class="emoji">◼️</div><div class="name">26. Black Medium Square</div><div class="code">U+25FC U+FE0F</div></div>
+      <div class="card"><div class="emoji">◾</div><div class="name">27. Black Medium Small Square</div><div class="code">U+25FE</div></div>
+      <div class="card"><div class="emoji">▪️</div><div class="name">28. Black Small Square</div><div class="code">U+25AA U+FE0F</div></div>
+      <div class="card"><div class="emoji">▭</div><div class="name">29. White Rectangle</div><div class="code">U+25AD</div></div>
+      <div class="card"><div class="emoji">▬</div><div class="name">30. Black Rectangle</div><div class="code">U+25AC</div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>4. Fridge / 冰箱</h2>
+    <div class="grid">
+      <div class="card"><div class="emoji">🧊</div><div class="name">31. Ice</div><div class="code">U+1F9CA</div></div>
+      <div class="card"><div class="emoji">🥶</div><div class="name">32. Cold Face</div><div class="code">U+1F976</div></div>
+      <div class="card"><div class="emoji">🥛</div><div class="name">33. Milk</div><div class="code">U+1F95B</div></div>
+      <div class="card"><div class="emoji">🍶</div><div class="name">34. Bottle / Sake</div><div class="code">U+1F376</div></div>
+      <div class="card"><div class="emoji">🧃</div><div class="name">35. Juice Box</div><div class="code">U+1F9C3</div></div>
+      <div class="card"><div class="emoji">🥤</div><div class="name">36. Cup With Straw</div><div class="code">U+1F964</div></div>
+      <div class="card"><div class="emoji">🍼</div><div class="name">37. Baby Bottle</div><div class="code">U+1F37C</div></div>
+      <div class="card"><div class="emoji">🧈</div><div class="name">38. Butter</div><div class="code">U+1F9C8</div></div>
+      <div class="card"><div class="emoji">🥬</div><div class="name">39. Leafy Green</div><div class="code">U+1F96C</div></div>
+      <div class="card"><div class="emoji">🍎</div><div class="name">40. Apple</div><div class="code">U+1F34E</div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>5. Rocking Chair / 摇椅</h2>
+    <div class="grid">
+      <div class="card"><div class="emoji">🪑</div><div class="name">41. Chair</div><div class="code">U+1FA91</div></div>
+      <div class="card"><div class="emoji">💺</div><div class="name">42. Seat</div><div class="code">U+1F4BA</div></div>
+      <div class="card"><div class="emoji">🛋️</div><div class="name">43. Couch and Lamp</div><div class="code">U+1F6CB U+FE0F</div></div>
+      <div class="card"><div class="emoji">🦽</div><div class="name">44. Manual Wheelchair</div><div class="code">U+1F9BD</div></div>
+      <div class="card"><div class="emoji">🦼</div><div class="name">45. Motorized Wheelchair</div><div class="code">U+1F9BC</div></div>
+      <div class="card"><div class="emoji">♿️</div><div class="name">46. Wheelchair Symbol</div><div class="code">U+267F U+FE0F</div></div>
+      <div class="card"><div class="emoji">🛏️</div><div class="name">47. Bed</div><div class="code">U+1F6CF U+FE0F</div></div>
+      <div class="card"><div class="emoji">🧸</div><div class="name">48. Teddy Bear Chair Vibe</div><div class="code">U+1F9F8</div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>6. Stool / 小圆凳</h2>
+    <div class="grid">
+      <div class="card"><div class="emoji">🪑</div><div class="name">49. Chair</div><div class="code">U+1FA91</div></div>
+      <div class="card"><div class="emoji">💺</div><div class="name">50. Seat</div><div class="code">U+1F4BA</div></div>
+      <div class="card"><div class="emoji">🟤</div><div class="name">51. Brown Circle</div><div class="code">U+1F7E4</div></div>
+      <div class="card"><div class="emoji">🟠</div><div class="name">52. Orange Circle</div><div class="code">U+1F7E0</div></div>
+      <div class="card"><div class="emoji">⚫</div><div class="name">53. Black Circle</div><div class="code">U+26AB</div></div>
+      <div class="card"><div class="emoji">⬤</div><div class="name">54. Black Large Circle</div><div class="code">U+2B24</div></div>
+      <div class="card"><div class="emoji">🪵</div><div class="name">55. Wood</div><div class="code">U+1FAB5</div></div>
+      <div class="card"><div class="emoji">🧺</div><div class="name">56. Basket Stool Vibe</div><div class="code">U+1F9FA</div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>8. Colored Embedded Icons / 彩色嵌入图标</h2>
+    <p>These are local colored SVG icons made for direct embedding and tablet testing.</p>
+    <div class="svg-grid">
+      <div class="svg-card"><div class="svg-icon-wrap"><img class="svg-icon" src="./color-plant.svg" alt="color plant"></div><div class="name">83. plant</div><button class="speak-btn" type="button" onclick="playAudio('plant.mp3')" title="Play plant / Play plant">🔊</button><div class="code">color-plant.svg</div></div>
+      <div class="svg-card"><div class="svg-icon-wrap"><img class="svg-icon" src="./color-chair.svg" alt="color chair"></div><div class="name">84. chair</div><div class="code">color-chair.svg</div></div>
+      <div class="svg-card"><div class="svg-icon-wrap"><img class="svg-icon" src="./color-rug.svg" alt="color rug"></div><div class="name">85. rug</div><div class="code">color-rug.svg</div></div>
+      <div class="svg-card"><div class="svg-icon-wrap"><img class="svg-icon" src="./color-fridge.svg" alt="color fridge"></div><div class="name">86. fridge</div><div class="code">color-fridge.svg</div></div>
+      <div class="svg-card"><div class="svg-icon-wrap"><img class="svg-icon" src="./color-mirror.svg" alt="color mirror"></div><div class="name">87. mirror</div><div class="code">color-mirror.svg</div></div>
+      <div class="svg-card"><div class="svg-icon-wrap"><img class="svg-icon" src="./color-bath-mat.svg" alt="color bath mat"></div><div class="name">88. bath mat</div><div class="code">color-bath-mat.svg</div></div>
+      <div class="svg-card"><div class="svg-icon-wrap"><img class="svg-icon" src="./color-rocking-chair.svg" alt="color rocking chair"></div><div class="name">89. rocking chair</div><div class="code">color-rocking-chair.svg</div></div>
+      <div class="svg-card"><div class="svg-icon-wrap"><img class="svg-icon" src="./color-stool.svg" alt="color stool"></div><div class="name">90. stool</div><div class="code">color-stool.svg</div></div>
+      <div class="svg-card"><div class="svg-icon-wrap"><img class="svg-icon" src="./color-silver-heart.svg" alt="color silver heart"></div><div class="name">91. silver heart</div><div class="code">color-silver-heart.svg</div></div>
+    </div>
+  </div>
+  <script>
+    let currentAudio = null;
+    function playAudio(fileName){
+      try{
+        if(currentAudio){
+          currentAudio.pause();
+          currentAudio.currentTime = 0;
+        }
+        currentAudio = new Audio('./' + fileName);
+        const playPromise = currentAudio.play();
+        if(playPromise && typeof playPromise.catch === 'function'){
+          playPromise.catch(() => {
+            alert('Audio cannot play on this device. / This device cannot play audio.');
+          });
+        }
+      }catch(e){
+        alert('Audio cannot play on this device. / This device cannot play audio.');
+      }
+    }
+  </script>
+</body>
+</html>

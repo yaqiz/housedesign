@@ -1554,6 +1554,7 @@
   .teacher-note h3{font-size:18px;color:#1f2937;margin-bottom:6px;padding-right:32px}
   .teacher-note-title{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
   .teacher-crown{font-size:16px;line-height:1}
+  .teacher-best-label{font-size:11px;font-weight:800;letter-spacing:.02em;text-transform:uppercase;color:#b45309;background:#fef3c7;border:1px solid #fcd34d;border-radius:999px;padding:3px 8px}
   .teacher-note-meta{font-size:12px;color:#6b7280;line-height:1.6;margin-bottom:10px}
   .teacher-note-section{margin-top:10px;padding-top:10px;border-top:1px dashed rgba(100,116,139,.25)}
   .teacher-note-section h4{font-size:12px;color:#475569;margin-bottom:6px;text-transform:uppercase;letter-spacing:.04em}
@@ -1608,18 +1609,6 @@
   <input type="text" name="created_at">
   <button type="submit">Submit</button>
 </form>
-
-<form name="house-design-game-results" method="POST" action="/" data-netlify="true" style="display:none">
-  <input type="hidden" name="form-name" value="house-design-game-results">
-  <input type="text" name="student_name">
-  <input type="text" name="score">
-  <input type="text" name="max_score">
-  <input type="text" name="percent">
-  <textarea name="result_json"></textarea>
-  <input type="text" name="completed_at">
-  <button type="submit">Submit</button>
-</form>
-
 
 <div class="floating-tools">
   <button class="tools-menu-btn" onclick="toggleToolsMenu()">Menu</button>
@@ -1676,7 +1665,7 @@
       <input id="studentNameInput" type="text" autocomplete="name" placeholder="Type your name / 输入你的名字">
     </div>
     <div class="home-link-row">
-      <a class="home-link-btn" href="./Game.html" onclick="return openGamePage(event)">Open Game / 打开游戏</a>
+      <a class="home-link-btn" href="./emoji-test.html">Icon Test / 图标测试</a>
     </div>
   </div>
   <div class="style-grid" id="styleGrid"></div>
@@ -4105,20 +4094,6 @@ function getStudentName(){
   return studentName;
 }
 
-function openGamePage(event){
-  const name=getStudentName();
-  if(!name){
-    if(event)event.preventDefault();
-    alert('Please enter your name first before opening the game. / 打开小游戏前请先输入你的名字。');
-    const input=document.getElementById('studentNameInput');
-    if(input)input.focus();
-    return false;
-  }
-  const target='./Game.html?student='+encodeURIComponent(name);
-  if(event&&event.currentTarget)event.currentTarget.href=target;
-  return true;
-}
-
 function showRandomTip(){
   let idx;
   do{idx=Math.floor(Math.random()*MASCOT_TIPS.length);}while(idx===lastTipIdx&&MASCOT_TIPS.length>1);
@@ -4211,7 +4186,7 @@ function renderRoomCards(){
     let colorHTML='<div class="color-selector" style="display:-webkit-flex;display:-webkit-flex;display:flex;gap:6px;margin-top:6px;justify-content:center">';
     COLOR_TONES.forEach(ct=>{
       const isActive=chosenColor[key]===ct.id;
-      colorHTML+=`<div style="width:24px;height:24px;border-radius:50%;background:${ct.color};cursor:pointer;border:2px solid ${isActive?'#3b82f6':'#e2e8f0'};${isActive?'box-shadow:0 0 0 2px #3b82f6;':'box-shadow:0 1px 3px rgba(0,0,0,.15);'}" onclick="event.stopPropagation();pickColor('${key}','${ct.id}')" title="${ct.name}">${ct.emoji}</div>`;
+      colorHTML+=`<div style="width:24px;height:24px;border-radius:50%;background:${ct.color};cursor:pointer;border:2px solid ${isActive?'#3b82f6':'#cbd5e1'};${isActive?'box-shadow:0 0 0 2px #3b82f6 inset, 0 0 0 2px #3b82f6;':'box-shadow:0 1px 3px rgba(0,0,0,.15);'}position:relative;display:flex;align-items:center;justify-content:center;" onclick="event.stopPropagation();pickColor('${key}','${ct.id}')" title="${ct.name}">${isActive?'<span style="font-size:12px;font-weight:700;color:'+(ct.id==='white'?'#475569':'#ffffff')+'">✓</span>':''}</div>`;
     });
     colorHTML+='</div>';
     card.innerHTML=`<div class="icon">${r.icon}</div><h3>${r.name} ${r.nameCn}</h3><div style="color:#64748b;font-size:12px;margin-bottom:4px">${floorLabel}</div>${sizeHTML}<div style="font-size:11px;color:#94a3b8;margin-top:4px">🎨 Color / 色调</div>${colorHTML}${done?'<div class="done-badge">✓ Designed ('+done.length+' items) / 已设计</div>':''}`;
@@ -4585,14 +4560,6 @@ function renderSelfEvaluationSummary(items){
   });
   html+='</div>';
   return html;
-}
-
-function renderGameResultSummary(result){
-  if(!result)return '<div class="teacher-note-empty">No game result yet</div>';
-  const score=Number(result.score||0);
-  const maxScore=Number(result.maxScore||0);
-  const percent=Number(result.percent||0);
-  return '<div class="teacher-note-review">🏆 <b>'+score+' / '+maxScore+'</b><br>'+percent+'%</div>';
 }
 
 function normalizeStudentName(name){
@@ -5079,9 +5046,8 @@ function renderTeacherBoard(){
   items.forEach((item,idx)=>{
     const isTopRated=(item.reviewCount||0)>0&&topAverage>0&&Math.abs((Number(item.averageStars)||0)-topAverage)<0.001;
     html+='<div class="teacher-note">';
-    html+='<h3 class="teacher-note-title"><span>'+escapeHtml(item.studentName||'Student')+'</span>'+(isTopRated?'<span class="teacher-crown" title="Highest peer rating">👑</span>':'')+'</h3>';
+    html+='<h3 class="teacher-note-title"><span>'+escapeHtml(item.studentName||'Student')+'</span>'+(isTopRated?'<span class="teacher-crown" title="Highest peer rating">👑</span><span class="teacher-best-label">The Best Designer</span>':'')+'</h3>';
     html+='<div class="teacher-note-meta">'+escapeHtml(item.styleName||item.style||'')+'<br>'+escapeHtml(item.submittedAt||'')+'</div>';
-    html+='<div class="teacher-note-section"><h4>Game Result</h4>'+renderGameResultSummary(item.gameResult)+'</div>';
     html+='<div class="teacher-note-section"><h4>Self Evaluation</h4>'+renderSelfEvaluationSummary(item.design&&item.design.selfEvaluation)+'</div>';
     html+='<div class="teacher-note-section"><h4>Peer Comments</h4>';
     html+='<div class="teacher-note-review">'+(item.averageStars?renderDisplayStars(item.averageStars,true):'<span class="teacher-note-empty">No peer rating yet</span>')+'</div>';
@@ -5631,8 +5597,10 @@ function init3DScene(){
     COLOR_TONES.forEach(ct=>{
       const isActive=chosenColor[chosenRoom]===ct.id;
       const dot=document.createElement('div');
-      dot.style.cssText=`width:28px;height:28px;border-radius:50%;background:${ct.color};cursor:pointer;border:2px solid ${isActive?'#3b82f6':'#e2e8f0'};${isActive?'box-shadow:0 0 0 2px #3b82f6;':'box-shadow:0 1px 3px rgba(0,0,0,.15);'}transition:all .2s;display:-webkit-flex;display:-webkit-flex;display:-webkit-flex;display:flex;align-items:center;justify-content:center;font-size:12px`;
-      dot.textContent=ct.emoji;
+      dot.style.cssText=`width:28px;height:28px;border-radius:50%;background:${ct.color};cursor:pointer;border:2px solid ${isActive?'#3b82f6':'#cbd5e1'};${isActive?'box-shadow:0 0 0 2px #3b82f6 inset, 0 0 0 2px #3b82f6;':'box-shadow:0 1px 3px rgba(0,0,0,.15);'}transition:all .2s;display:-webkit-flex;display:-webkit-flex;display:-webkit-flex;display:flex;align-items:center;justify-content:center;font-size:12px`;
+      dot.textContent=isActive?'✓':'';
+      dot.style.color=ct.id==='white'?'#475569':'#ffffff';
+      dot.style.fontWeight='700';
       dot.title=ct.name;
       dot.onclick=()=>{pickColorLive(chosenRoom,ct.id);};
       picker.appendChild(dot);
@@ -6034,7 +6002,7 @@ function renderFurnitureList(){
   const max=Math.max(2,Math.floor(sv.area/2.5));
   items.forEach(f=>{
     const el=document.createElement('div');el.className='fitem';el.dataset.id=f.id;
-    el.innerHTML=`<div class="remove-x" title="Remove">×</div><div class="f-speak" title="朗读 / Speak">🔊</div><span class="f-emoji">${f.emoji}</span><div class="f-label">${f.label} ${f.labelCn}</div><div class="f-dims">${f.w}×${f.l}cm</div><div class="f-price">¥${(f.price||0).toLocaleString()}</div>`;
+el.innerHTML=`<div class="remove-x" title="Remove">×</div><div class="f-speak" title="朗读 / Speak">🔊</div><span class="f-emoji">${f.emoji}</span><div class="f-label">${f.label} ${f.labelCn}</div><div class="f-dims">${f.w}×${f.l}cm</div><div class="f-price">¥${(f.price||0).toLocaleString()}</div>`;
     el.onmouseenter=()=>showToast(f.label+' '+f.labelCn,f.tip);
     el.onmouseleave=()=>hideToast();
     el.onclick=()=>addFurniture(f);
