@@ -4044,6 +4044,7 @@ function rBoxG(w,h,d,r){
 let chosenStyle=null,chosenRoom=null,chosenSize={},chosenColor={},placedItems=[],scene=null,camera=null,renderer=null,controls=null,raycaster=null,mouse=null,canvasContainer=null,sentences=[],roomObjects=[];
 let savedDesigns={};
 let studentName='';
+let viewingSubmissionName='';
 
 const COLOR_TONES=[
   {id:'warm',name:'Warm 暖色',color:'#e8c8a0',wall:0xe8c8a0,floor:0xb88850,emoji:'🧡'},
@@ -4118,6 +4119,7 @@ function selectStyle(key,el){
 }
 
 function goToRoom(){
+  viewingSubmissionName='';
   if(!chosenStyle)return;
   if(!getStudentName()){
     alert('Please enter your name first. / 请先输入你的名字。');
@@ -4139,6 +4141,7 @@ function goToStyle(){
 }
 
 function goHome(){
+  viewingSubmissionName='';
   // Save current room design before leaving
   saveCurrentDesign();
   if(typeof speechSynthesis!=='undefined'){try{speechSynthesis.cancel();}catch(e){}}
@@ -4405,13 +4408,14 @@ function speakWordBank(event,text){
 
 function showOverview(){
   saveCurrentDesign();
-  const currentStudent=getStudentName()||'Student';
+  const currentStudent=(getStudentName()||'Student').trim();
+  const displayStudent=(viewingSubmissionName||currentStudent||'Student').trim();
   stopLocalWordAudio();
   if(typeof speechSynthesis!=='undefined'){try{speechSynthesis.cancel();}catch(e){}}
   document.querySelectorAll('.stage').forEach(s=>s.classList.remove('active'));
   document.getElementById('stage-overview').classList.add('active');
   const s=STYLES[chosenStyle];
-  document.getElementById('overviewStyle').textContent=currentStudent+' - Style: '+s.name+' '+s.nameCn;
+  document.getElementById('overviewStyle').textContent=displayStudent+' - Style: '+s.name+' '+s.nameCn;
   const wrap=document.getElementById('overviewWrap');
   const totalItems=Object.values(savedDesigns).reduce((s,a)=>Array.isArray(a)?s+a.length:s,0);
   const totalArea=Object.keys(savedDesigns).filter(k=>!k.includes('_size')).reduce((s,k)=>{
@@ -4421,7 +4425,7 @@ function showOverview(){
   const allDone=Object.keys(ROOMS).every(k=>savedDesigns[k]);
   // 3D Overview
   const designedCount=Object.keys(ROOMS).filter(k=>savedDesigns[k]).length;
-  let html='<div style="text-align:center;margin-bottom:12px"><h2 style="font-size:22px;color:#1e293b">'+escapeHtml(currentStudent)+'\'s Dream Home</h2><p style="color:#64748b;font-size:14px">'+s.icon+' '+s.name+' '+s.nameCn+' - '+designedCount+' rooms - '+totalItems+' furniture - '+totalArea+' m2</p></div>';
+  let html='<div style="text-align:center;margin-bottom:12px"><h2 style="font-size:22px;color:#1e293b">'+escapeHtml(displayStudent)+'\'s Dream Home</h2><p style="color:#64748b;font-size:14px">'+s.icon+' '+s.name+' '+s.nameCn+' - '+designedCount+' rooms - '+totalItems+' furniture - '+totalArea+' m2</p></div>';
   const ov3dH=window.innerWidth<745?'280px':window.innerWidth<1400?'360px':'420px';
   html+=`<div id="overview3d" style="width:100%;height:${ov3dH};border-radius:16px;overflow:hidden;border:2px solid #e2e8f0;background:#f0f4f8;position:relative;touch-action:none">${renderWordBankPanel()}<div style="position:absolute;left:10px;bottom:10px;z-index:2;background:rgba(255,255,255,.92);border:1px solid #dbe3ef;border-radius:8px;padding:6px 10px;font-size:12px;color:#475569">Tap a room to zoom inside - tap empty space to return / \u70b9\u51fb\u623f\u95f4\u653e\u5927\u67e5\u770b - \u70b9\u51fb\u7a7a\u767d\u8fd4\u56de</div></div>`;
   // Floor tabs
@@ -4626,6 +4630,7 @@ function getCurrentEditCode(){
 function clearEditingState(){
   currentEditingSubmissionId=null;
   currentEditingCode='';
+  viewingSubmissionName='';
 }
 
 function escapeHtml(value){
@@ -5159,8 +5164,7 @@ function loadSubmissionDesign(idx){
   clearEditingState();
   savedDesigns=JSON.parse(JSON.stringify(item.design.rooms));
   chosenStyle=item.design.style||chosenStyle||'modern';
-  studentName=item.studentName||item.design.studentName||studentName;
-  localStorage.setItem('houseDesignStudentName',studentName);
+  viewingSubmissionName=(item.studentName||item.design.studentName||'').trim();
   closeSubmissionMenu();
   showOverview();
 }
@@ -5233,8 +5237,7 @@ function loadTeacherSubmissionDesign(idx){
   clearEditingState();
   savedDesigns=JSON.parse(JSON.stringify(item.design.rooms));
   chosenStyle=item.design.style||chosenStyle||'modern';
-  studentName=item.studentName||item.design.studentName||studentName;
-  localStorage.setItem('houseDesignStudentName',studentName);
+  viewingSubmissionName=(item.studentName||item.design.studentName||'').trim();
   closeTeacherBoard();
   showOverview();
 }
