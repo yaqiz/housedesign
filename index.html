@@ -1144,6 +1144,11 @@
   .style-card h3{font-size:17px;margin-bottom:4px;font-weight:700}
   .style-card p{color:#64748b;font-size:13px;line-height:1.5}
   .style-card .style-icon{font-size:40px;margin-bottom:6px;display:block}
+  .video-modal{position:fixed;inset:0;background:rgba(15,23,42,.82);display:none;align-items:center;justify-content:center;z-index:9999;padding:20px}
+  .video-modal.show{display:-webkit-flex;display:flex}
+  .video-modal-panel{position:relative;width:min(92vw,960px);background:#0f172a;border-radius:18px;padding:16px;box-shadow:0 20px 60px rgba(0,0,0,.35)}
+  .video-modal-close{position:absolute;top:10px;right:10px;width:38px;height:38px;border:none;border-radius:999px;background:rgba(255,255,255,.16);color:#fff;font-size:24px;cursor:pointer}
+  .video-modal video{display:block;width:100%;max-height:78vh;border-radius:12px;background:#000}
   .start-btn{margin-top:28px;padding:14px 36px;background:linear-gradient(90deg,#2563eb,#7c3aed);color:white;border-radius:10px;font-size:17px;font-weight:700;transition:all .2s;opacity:.4;pointer-events:none;box-shadow:0 4px 12px rgba(37,99,235,.3)}
   .start-btn.ready{opacity:1;pointer-events:auto}
   .start-btn.ready:hover{transform:scale(1.05)}
@@ -1668,6 +1673,13 @@
   </div>
   <div class="style-grid" id="styleGrid"></div>
   <button class="start-btn" id="startBtn" onclick="goToRoom()">Next: Pick a Room → / 下一步：选择房间 →</button>
+</div>
+
+<div class="video-modal" id="videoModal" aria-hidden="true">
+  <div class="video-modal-panel">
+    <button class="video-modal-close" id="videoModalClose" type="button" aria-label="Close video">×</button>
+    <video id="styleVideo" controls playsinline preload="metadata"></video>
+  </div>
 </div>
 
 <div id="stage-room" class="stage">
@@ -4116,6 +4128,52 @@ function selectStyle(key,el){
   el.classList.add('selected');
   document.getElementById('startBtn').classList.add('ready');
   showMascotTip(`${STYLES[key].icon} ${STYLES[key].name} ${STYLES[key].nameCn} — great pick! Click Next when you're ready. / 好选择！准备好了就点击下一步。`);
+  if(key==='chinese')playStyleVideo(['chinese.mp4','newchinese.mp4']);
+  if(key==='scandinavian')playStyleVideo(['scandinavian.mp4']);
+  if(key==='french')playStyleVideo(['french.mp4']);
+}
+
+function openStyleVideo(url){
+  const modal=document.getElementById('videoModal');
+  const video=document.getElementById('styleVideo');
+  if(!modal||!video)return;
+  video.pause();
+  video.src=url;
+  video.load();
+  modal.classList.add('show');
+  modal.setAttribute('aria-hidden','false');
+  const playPromise=video.play();
+  if(playPromise&&typeof playPromise.catch==='function'){
+    playPromise.catch(function(){});
+  }
+}
+
+function closeStyleVideo(){
+  const modal=document.getElementById('videoModal');
+  const video=document.getElementById('styleVideo');
+  if(!modal||!video)return;
+  video.pause();
+  modal.classList.remove('show');
+  modal.setAttribute('aria-hidden','true');
+}
+
+function playStyleVideo(candidates){
+  const list=Array.isArray(candidates)?candidates.slice():[];
+  if(!list.length)return;
+  const tryNext=function(index){
+    if(index>=list.length)return;
+    const url=list[index];
+    const probe=document.createElement('video');
+    probe.preload='metadata';
+    probe.onloadedmetadata=function(){
+      openStyleVideo(url);
+    };
+    probe.onerror=function(){
+      tryNext(index+1);
+    };
+    probe.src=url;
+  };
+  tryNext(0);
 }
 
 function goToRoom(){
@@ -6930,6 +6988,17 @@ document.addEventListener('click',function(e){
 });
 window.addEventListener('resize',applyResponsiveMathPanel);
 applyResponsiveMathPanel();
+const videoModal=document.getElementById('videoModal');
+const videoModalClose=document.getElementById('videoModalClose');
+if(videoModalClose)videoModalClose.addEventListener('click',closeStyleVideo);
+if(videoModal){
+  videoModal.addEventListener('click',function(e){
+    if(e.target===videoModal)closeStyleVideo();
+  });
+}
+document.addEventListener('keydown',function(e){
+  if(e.key==='Escape'&&videoModal&&videoModal.classList.contains('show'))closeStyleVideo();
+});
 </script>
 </body>
 </html>
