@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Style Video</title>
+<style>
+  :root{
+    color-scheme: dark;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:
+      radial-gradient(circle at top,#1e3a8a 0,#0f172a 42%,#020617 100%);
+    color:#fff;
+    font-family:Arial,sans-serif;
+  }
+  .shell{
+    width:min(94vw,980px);
+    padding:20px;
+    border-radius:24px;
+    background:rgba(15,23,42,.82);
+    box-shadow:0 20px 60px rgba(0,0,0,.35);
+  }
+  .topbar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:16px;
+    margin-bottom:16px;
+  }
+  .title{
+    font-size:24px;
+    font-weight:800;
+  }
+  .sub{
+    color:#cbd5e1;
+    font-size:14px;
+    margin-top:4px;
+  }
+  .actions{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+  }
+  .btn{
+    border:none;
+    border-radius:999px;
+    padding:12px 18px;
+    background:#fff;
+    color:#0f172a;
+    font-size:14px;
+    font-weight:700;
+    cursor:pointer;
+  }
+  .btn.secondary{
+    background:rgba(255,255,255,.14);
+    color:#fff;
+  }
+  .player{
+    position:relative;
+    overflow:hidden;
+    border-radius:18px;
+    background:#000;
+  }
+  video{
+    display:block;
+    width:100%;
+    max-height:76vh;
+    background:#000;
+  }
+  .status{
+    margin-top:14px;
+    color:#cbd5e1;
+    font-size:14px;
+  }
+  @media (max-width:700px){
+    .topbar{
+      flex-direction:column;
+      align-items:flex-start;
+    }
+    .title{
+      font-size:20px;
+    }
+  }
+</style>
+</head>
+<body>
+  <div class="shell">
+    <div class="topbar">
+      <div>
+        <div class="title" id="videoTitle">Style Video</div>
+        <div class="sub" id="videoSub">Standalone player / 独立视频页</div>
+      </div>
+      <div class="actions">
+        <button class="btn" id="playBtn" type="button">Play / 播放</button>
+        <button class="btn secondary" id="reloadBtn" type="button">Reload / 重新加载</button>
+        <button class="btn secondary" id="closeBtn" type="button">Close / 关闭</button>
+      </div>
+    </div>
+    <div class="player">
+      <video id="styleVideo" controls playsinline preload="auto"></video>
+    </div>
+    <div class="status" id="statusText">Preparing video... / 正在准备视频</div>
+  </div>
+
+<script>
+const VIDEO_MAP={
+  chinese:{
+    title:'Chinese / 新中式',
+    files:['chinese.mp4']
+  },
+  scandinavian:{
+    title:'Scandinavian / 北欧简约',
+    files:['scandinavian.mp4']
+  },
+  french:{
+    title:'French / 法式浪漫',
+    files:['French.mp4','french.mp4']
+  }
+};
+
+const params=new URLSearchParams(window.location.search);
+const styleKey=params.get('style')||'';
+const config=VIDEO_MAP[styleKey]||null;
+const video=document.getElementById('styleVideo');
+const statusText=document.getElementById('statusText');
+const titleEl=document.getElementById('videoTitle');
+const subEl=document.getElementById('videoSub');
+const playBtn=document.getElementById('playBtn');
+const reloadBtn=document.getElementById('reloadBtn');
+const closeBtn=document.getElementById('closeBtn');
+
+function setStatus(text){
+  statusText.textContent=text;
+}
+
+function setTitle(){
+  if(!config){
+    titleEl.textContent='Video Not Found';
+    subEl.textContent='Unknown style / 未知风格';
+    return;
+  }
+  titleEl.textContent=config.title;
+  subEl.textContent='Standalone player / 独立视频页';
+}
+
+function tryLoad(index){
+  if(!config||index>=config.files.length){
+    setStatus('Video failed to load. / 视频加载失败');
+    return;
+  }
+  const src=config.files[index];
+  setStatus('Loading '+src+' ... / 正在加载 '+src);
+  video.onerror=function(){
+    tryLoad(index+1);
+  };
+  video.onloadeddata=function(){
+    setStatus('Ready to play. / 可以播放了');
+  };
+  video.onwaiting=function(){
+    setStatus('Buffering... / 正在缓冲');
+  };
+  video.onplaying=function(){
+    setStatus('Playing smoothly in standalone mode. / 独立页播放中');
+  };
+  video.src=src;
+  video.load();
+}
+
+setTitle();
+tryLoad(0);
+
+playBtn.addEventListener('click',function(){
+  const p=video.play();
+  if(p&&typeof p.catch==='function'){
+    p.catch(function(){
+      setStatus('Tap Play again if your browser blocked autoplay. / 如果浏览器拦截了播放，请再点一次');
+    });
+  }
+});
+
+reloadBtn.addEventListener('click',function(){
+  tryLoad(0);
+});
+
+closeBtn.addEventListener('click',function(){
+  if(window.history.length>1){
+    window.close();
+  }
+  window.location.href='index.html';
+});
+</script>
+</body>
+</html>

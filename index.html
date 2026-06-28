@@ -4157,84 +4157,12 @@ function selectStyle(key,el){
   el.classList.add('selected');
   document.getElementById('startBtn').classList.add('ready');
   showMascotTip(`${STYLES[key].icon} ${STYLES[key].name} ${STYLES[key].nameCn} — great pick! Click Next when you're ready. / 好选择！准备好了就点击下一步。`);
-  if(STYLE_VIDEO_SOURCES[key])playStyleVideo(STYLE_VIDEO_SOURCES[key]);
+  if(STYLE_VIDEO_SOURCES[key])openStandaloneVideoPage(key);
 }
 
-function openStyleVideo(url,fallbacks){
-  const modal=document.getElementById('videoModal');
-  const video=document.getElementById('styleVideo');
-  if(!modal||!video)return;
-  video.onerror=null;
-  if(Array.isArray(fallbacks)&&fallbacks.length){
-    video.onerror=function(){
-      const next=fallbacks.shift();
-      if(next)openStyleVideo(next,fallbacks);
-    };
-  }
-  video.pause();
-  showVideoLoader('Loading video... / 正在加载视频');
-  hideVideoPlayOverlay();
-  modal.classList.add('show');
-  modal.setAttribute('aria-hidden','false');
-  video.onloadeddata=function(){
-    hideVideoLoader();
-    showVideoPlayOverlay();
-  };
-  video.onerror=function(){
-    const next=Array.isArray(fallbacks)&&fallbacks.length?fallbacks.shift():null;
-    if(next){
-      openStyleVideo(next,fallbacks);
-      return;
-    }
-    hideVideoLoader();
-    showMascotTip('Video failed to load. / 视频加载失败。');
-  };
-  video.src=url;
-  video.load();
-}
-
-function closeStyleVideo(){
-  const modal=document.getElementById('videoModal');
-  const video=document.getElementById('styleVideo');
-  if(!modal||!video)return;
-  video.pause();
-  video.onloadeddata=null;
-  video.onerror=null;
-  video.removeAttribute('src');
-  video.load();
-  hideVideoLoader();
-  hideVideoPlayOverlay();
-  modal.classList.remove('show');
-  modal.setAttribute('aria-hidden','true');
-}
-
-function playStyleVideo(candidates){
-  const list=Array.isArray(candidates)?candidates.slice():[];
-  if(!list.length)return;
-  const first=list.shift();
-  openStyleVideo(first,list);
-}
-
-function showVideoLoader(text){
-  const loader=document.getElementById('videoLoader');
-  const label=document.getElementById('videoLoaderText');
-  if(label&&text)label.textContent=text;
-  if(loader)loader.classList.add('show');
-}
-
-function hideVideoLoader(){
-  const loader=document.getElementById('videoLoader');
-  if(loader)loader.classList.remove('show');
-}
-
-function showVideoPlayOverlay(){
-  const overlay=document.getElementById('videoPlayOverlay');
-  if(overlay)overlay.classList.add('show');
-}
-
-function hideVideoPlayOverlay(){
-  const overlay=document.getElementById('videoPlayOverlay');
-  if(overlay)overlay.classList.remove('show');
+function openStandaloneVideoPage(styleKey){
+  const url='video.html?style='+encodeURIComponent(styleKey);
+  window.open(url,'_blank','noopener');
 }
 
 function goToRoom(){
@@ -7049,31 +6977,6 @@ document.addEventListener('click',function(e){
 });
 window.addEventListener('resize',applyResponsiveMathPanel);
 applyResponsiveMathPanel();
-const videoModal=document.getElementById('videoModal');
-const videoModalClose=document.getElementById('videoModalClose');
-const videoPlayBtn=document.getElementById('videoPlayBtn');
-if(videoModalClose)videoModalClose.addEventListener('click',closeStyleVideo);
-if(videoPlayBtn){
-  videoPlayBtn.addEventListener('click',function(){
-    const video=document.getElementById('styleVideo');
-    if(!video)return;
-    hideVideoPlayOverlay();
-    const playPromise=video.play();
-    if(playPromise&&typeof playPromise.catch==='function'){
-      playPromise.catch(function(){
-        showVideoPlayOverlay();
-      });
-    }
-  });
-}
-if(videoModal){
-  videoModal.addEventListener('click',function(e){
-    if(e.target===videoModal)closeStyleVideo();
-  });
-}
-document.addEventListener('keydown',function(e){
-  if(e.key==='Escape'&&videoModal&&videoModal.classList.contains('show'))closeStyleVideo();
-});
 </script>
 </body>
 </html>
