@@ -1149,6 +1149,17 @@
   .video-modal-panel{position:relative;width:min(92vw,960px);background:#0f172a;border-radius:18px;padding:16px;box-shadow:0 20px 60px rgba(0,0,0,.35)}
   .video-modal-close{position:absolute;top:10px;right:10px;width:38px;height:38px;border:none;border-radius:999px;background:rgba(255,255,255,.16);color:#fff;font-size:24px;cursor:pointer}
   .video-modal video{display:block;width:100%;max-height:78vh;border-radius:12px;background:#000}
+  .video-loader{position:absolute;inset:16px;display:none;align-items:center;justify-content:center;background:rgba(2,6,23,.58);border-radius:12px;z-index:2}
+  .video-loader.show{display:-webkit-flex;display:flex}
+  .video-loader-card{display:-webkit-flex;display:flex;flex-direction:column;align-items:center;gap:10px;padding:18px 22px;border-radius:14px;background:rgba(15,23,42,.88);box-shadow:0 10px 30px rgba(0,0,0,.22);color:#fff}
+  .video-loader-spinner{width:36px;height:36px;border-radius:50%;border:4px solid rgba(255,255,255,.2);border-top-color:#60a5fa;animation:spin 1s linear infinite}
+  .video-loader-title{font-size:16px;font-weight:700}
+  .video-loader-text{font-size:13px;color:#cbd5e1}
+  .video-play-overlay{position:absolute;inset:16px;display:none;align-items:center;justify-content:center;background:rgba(2,6,23,.42);border-radius:12px;z-index:2}
+  .video-play-overlay.show{display:-webkit-flex;display:flex}
+  .video-play-btn{display:-webkit-flex;display:flex;align-items:center;gap:12px;padding:16px 22px;border:none;border-radius:999px;background:rgba(255,255,255,.92);color:#0f172a;font-size:18px;font-weight:800;cursor:pointer;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+  .video-play-icon{width:0;height:0;border-top:12px solid transparent;border-bottom:12px solid transparent;border-left:18px solid #2563eb}
+  @keyframes spin{to{transform:rotate(360deg)}}
   .start-btn{margin-top:28px;padding:14px 36px;background:linear-gradient(90deg,#2563eb,#7c3aed);color:white;border-radius:10px;font-size:17px;font-weight:700;transition:all .2s;opacity:.4;pointer-events:none;box-shadow:0 4px 12px rgba(37,99,235,.3)}
   .start-btn.ready{opacity:1;pointer-events:auto}
   .start-btn.ready:hover{transform:scale(1.05)}
@@ -1678,6 +1689,19 @@
 <div class="video-modal" id="videoModal" aria-hidden="true">
   <div class="video-modal-panel">
     <button class="video-modal-close" id="videoModalClose" type="button" aria-label="Close video">×</button>
+    <div class="video-loader" id="videoLoader">
+      <div class="video-loader-card">
+        <div class="video-loader-spinner"></div>
+        <div class="video-loader-title">Loading video...</div>
+        <div class="video-loader-text" id="videoLoaderText">Buffering before playback / 正在缓冲视频</div>
+      </div>
+    </div>
+    <div class="video-play-overlay" id="videoPlayOverlay">
+      <button class="video-play-btn" id="videoPlayBtn" type="button">
+        <span class="video-play-icon"></span>
+        <span>Play Video / 播放视频</span>
+      </button>
+    </div>
     <video id="styleVideo" controls playsinline preload="metadata"></video>
   </div>
 </div>
@@ -4057,6 +4081,11 @@ let chosenStyle=null,chosenRoom=null,chosenSize={},chosenColor={},placedItems=[]
 let savedDesigns={};
 let studentName='';
 let viewingSubmissionName='';
+const STYLE_VIDEO_SOURCES={
+  chinese:['chinese.mp4'],
+  scandinavian:['scandinavian.mp4'],
+  french:['French.mp4','french.mp4']
+};
 
 const COLOR_TONES=[
   {id:'warm',name:'Warm 暖色',color:'#e8c8a0',wall:0xe8c8a0,floor:0xb88850,emoji:'🧡'},
@@ -4128,24 +4157,40 @@ function selectStyle(key,el){
   el.classList.add('selected');
   document.getElementById('startBtn').classList.add('ready');
   showMascotTip(`${STYLES[key].icon} ${STYLES[key].name} ${STYLES[key].nameCn} — great pick! Click Next when you're ready. / 好选择！准备好了就点击下一步。`);
-  if(key==='chinese')playStyleVideo(['chinese.mp4','newchinese.mp4']);
-  if(key==='scandinavian')playStyleVideo(['scandinavian.mp4']);
-  if(key==='french')playStyleVideo(['french.mp4']);
+  if(STYLE_VIDEO_SOURCES[key])playStyleVideo(STYLE_VIDEO_SOURCES[key]);
 }
 
-function openStyleVideo(url){
+function openStyleVideo(url,fallbacks){
   const modal=document.getElementById('videoModal');
   const video=document.getElementById('styleVideo');
   if(!modal||!video)return;
+  video.onerror=null;
+  if(Array.isArray(fallbacks)&&fallbacks.length){
+    video.onerror=function(){
+      const next=fallbacks.shift();
+      if(next)openStyleVideo(next,fallbacks);
+    };
+  }
   video.pause();
-  video.src=url;
-  video.load();
+  showVideoLoader('Loading video... / 正在加载视频');
+  hideVideoPlayOverlay();
   modal.classList.add('show');
   modal.setAttribute('aria-hidden','false');
-  const playPromise=video.play();
-  if(playPromise&&typeof playPromise.catch==='function'){
-    playPromise.catch(function(){});
-  }
+  video.onloadeddata=function(){
+    hideVideoLoader();
+    showVideoPlayOverlay();
+  };
+  video.onerror=function(){
+    const next=Array.isArray(fallbacks)&&fallbacks.length?fallbacks.shift():null;
+    if(next){
+      openStyleVideo(next,fallbacks);
+      return;
+    }
+    hideVideoLoader();
+    showMascotTip('Video failed to load. / 视频加载失败。');
+  };
+  video.src=url;
+  video.load();
 }
 
 function closeStyleVideo(){
@@ -4153,6 +4198,12 @@ function closeStyleVideo(){
   const video=document.getElementById('styleVideo');
   if(!modal||!video)return;
   video.pause();
+  video.onloadeddata=null;
+  video.onerror=null;
+  video.removeAttribute('src');
+  video.load();
+  hideVideoLoader();
+  hideVideoPlayOverlay();
   modal.classList.remove('show');
   modal.setAttribute('aria-hidden','true');
 }
@@ -4160,20 +4211,30 @@ function closeStyleVideo(){
 function playStyleVideo(candidates){
   const list=Array.isArray(candidates)?candidates.slice():[];
   if(!list.length)return;
-  const tryNext=function(index){
-    if(index>=list.length)return;
-    const url=list[index];
-    const probe=document.createElement('video');
-    probe.preload='metadata';
-    probe.onloadedmetadata=function(){
-      openStyleVideo(url);
-    };
-    probe.onerror=function(){
-      tryNext(index+1);
-    };
-    probe.src=url;
-  };
-  tryNext(0);
+  const first=list.shift();
+  openStyleVideo(first,list);
+}
+
+function showVideoLoader(text){
+  const loader=document.getElementById('videoLoader');
+  const label=document.getElementById('videoLoaderText');
+  if(label&&text)label.textContent=text;
+  if(loader)loader.classList.add('show');
+}
+
+function hideVideoLoader(){
+  const loader=document.getElementById('videoLoader');
+  if(loader)loader.classList.remove('show');
+}
+
+function showVideoPlayOverlay(){
+  const overlay=document.getElementById('videoPlayOverlay');
+  if(overlay)overlay.classList.add('show');
+}
+
+function hideVideoPlayOverlay(){
+  const overlay=document.getElementById('videoPlayOverlay');
+  if(overlay)overlay.classList.remove('show');
 }
 
 function goToRoom(){
@@ -6990,7 +7051,21 @@ window.addEventListener('resize',applyResponsiveMathPanel);
 applyResponsiveMathPanel();
 const videoModal=document.getElementById('videoModal');
 const videoModalClose=document.getElementById('videoModalClose');
+const videoPlayBtn=document.getElementById('videoPlayBtn');
 if(videoModalClose)videoModalClose.addEventListener('click',closeStyleVideo);
+if(videoPlayBtn){
+  videoPlayBtn.addEventListener('click',function(){
+    const video=document.getElementById('styleVideo');
+    if(!video)return;
+    hideVideoPlayOverlay();
+    const playPromise=video.play();
+    if(playPromise&&typeof playPromise.catch==='function'){
+      playPromise.catch(function(){
+        showVideoPlayOverlay();
+      });
+    }
+  });
+}
 if(videoModal){
   videoModal.addEventListener('click',function(e){
     if(e.target===videoModal)closeStyleVideo();
